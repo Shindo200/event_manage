@@ -22,8 +22,8 @@ describe Events do
   describe "#open_csv" do
     it "CSVの内容が配列で返されること" do
       assert_ary = [
-        ["項番","ID","日時","見出し","イベント名","開催者","チーム名","途中経過","結果","備考"],
-        ["1","2012010100","2012/01/01 00:00:00","見出しテスト","イベントテスト","shindo200","チームテスト","経過テスト","結果テスト","備考テスト"]
+        ["項番","ID","日時","イベント名","イベントコード","開催者","チーム名","途中経過","結果","備考"],
+        ["1","2012010100","2012/01/01 00:00:00","イベントテスト","0000","shindo200","チームテスト","経過テスト","結果テスト","備考テスト"]
       ]
       @events.send(:open_csv, TEST_CSV_1_PATH).should == assert_ary
     end
@@ -53,9 +53,9 @@ describe Events do
     it "インポートしたCSVの内容がDBに保存されること" do
       @events.import_csv(TEST_CSV_1_PATH)
       @events["2012010100"].datetime.should == Time.parse("2012/01/01 00:00:00")
-      @events["2012010100"].summary.should == "見出しテスト"
-      @events["2012010100"].name.should == "イベントテスト"
-      @events["2012010100"].host_person.should == "小田井"
+      @events["2012010100"].summary.should == "イベントテスト"
+      @events["2012010100"].code.should == "0000"
+      @events["2012010100"].host_person.should == "shindo200"
       @events["2012010100"].team.should == "チームテスト"
       @events["2012010100"].progress.should == "経過テスト"
       @events["2012010100"].result.should == "結果テスト"
@@ -65,9 +65,9 @@ describe Events do
     it "インポートしたCSVのカラムの順番がばらばらでも正しくインポートできること" do
       @events.import_csv(TEST_CSV_3_PATH)
       @events["2012010100"].datetime.should == Time.parse("2012/01/01 00:00:00")
-      @events["2012010100"].summary.should == "見出しテスト"
-      @events["2012010100"].name.should == "イベントテスト"
-      @events["2012010100"].host_person.should == "小田井"
+      @events["2012010100"].summary.should == "イベントテスト"
+      @events["2012010100"].code.should == "0000"
+      @events["2012010100"].host_person.should == "shindo200"
       @events["2012010100"].team.should == "チームテスト"
       @events["2012010100"].progress.should == "経過テスト"
       @events["2012010100"].result.should == "結果テスト"

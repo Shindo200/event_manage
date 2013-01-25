@@ -16,7 +16,7 @@ class Events
     csv = open_csv(path)
     csv_head = csv.shift
     column_index = {
-      :key => csv_head.index("項目ID"),
+      :key => csv_head.index("ID"),
       :datetime => csv_head.index("日時"),
       :summary => csv_head.index("イベント名"),
       :code => csv_head.index("イベントコード"),
