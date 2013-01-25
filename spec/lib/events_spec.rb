@@ -79,7 +79,7 @@ describe Events do
       @events["2012010127"].team.should == "Aチーム"
     end
 
-    it "チーム名が'Null'の場合は概要から部署を探すしてインポートすること" do
+    it "チーム名が'Null'の場合は概要からチームを探すしてインポートすること" do
       @events.import_csv(TEST_CSV_2_PATH)
       @events["2012010129"].team.should == "Aチーム"
     end
@@ -141,7 +141,7 @@ describe Events do
     end
   end
 
-  describe "#get_top_department" do
+  describe "#get_top_team" do
     it "イベントの中で参加の多いチームが順に返されること" do
       @events.import_csv(TEST_CSV_2_PATH)
       (2012010126..2012010129).each {|id| @events.delete(id.to_s)}
@@ -218,7 +218,7 @@ describe Events do
     end
   end
 
-  describe "#is_valid_department?" do
+  describe "#is_valid_team?" do
     it "チーム名が空の場合はfalseを返すこと" do
       @events.send(:is_valid_team?, nil).should be_false
     end
@@ -232,12 +232,12 @@ describe Events do
     end
   end
 
-  describe "#scan_department" do
+  describe "#scan_team" do
     it "先頭にチーム名が書かれていた場合はそのチーム名を返すこと" do
       @events.send(:scan_team, "Aチーム Pat 今日も良い天気。").should == "Aチーム"
     end
 
-    it "チーム名が2回書かれていた場合は最初の部署名を返すこと" do
+    it "チーム名が2回書かれていた場合は最初のチーム名を返すこと" do
       @events.send(:scan_team, "Aチーム Pat Bチームのメンバーが怒り気味。").should == "Aチーム"
     end
 

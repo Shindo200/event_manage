@@ -208,7 +208,7 @@ class Events
 
   def is_valid_team?(team)
     return false if team.nil?
-    return false if team == '通常ではない部署'
+    return false if team == 'Null'
     true
   end
 
