@@ -1,0 +1,28 @@
+form.search-box {
+  margin: 50px 0px 100px 0px;
+}
+div.date-range {
+  margin: 0px 0px 30px 0px;
+}
+div.application-title {
+  text-align: center;
+  width: 100%;
+}
+span.match {
+  font-weight: bold;
+}
+div.event-summary {
+  text-decoration: underline;
+}
+div.event-time {
+  font-size: small;
+  color: #228b22;
+}
+div.event-description {
+  font-size: small;
+}
+div.page-footer {
+  text-align: center;
+  font-size: small;
+  color: #606060;
+}

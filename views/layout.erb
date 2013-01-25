@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title><%= APP_NAME %></title>
+  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!--[if lte IE 8]>
+  <link href="bootstrap/css/bootstrap-ie6.css" rel="stylesheet">
+  <![endif]-->
+  <link href="css/application.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1><a href="<%= APP_HOME %>" %><%= APP_NAME %></a>　
+      <small><%= APP_DESCRIPTION %></small></h1>
+    </div>
+    <% if flash[:notice] %>
+      <div class="text-error"><%= flash[:notice] %></div>
+    <% end %>
+    <div class="row-fluid">
+      <%= yield %>
+    </div>
+  </div>
+  <div class="page-footer">
+    <p><%= APP_COPYRIGHT %></p>
+  </div>
+</body>
+</html>

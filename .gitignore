@@ -1,0 +1,5 @@
+db/*.db*
+tmp/retrieve.csv
+tmp/pids/*
+log/*.log
+.DS_Store

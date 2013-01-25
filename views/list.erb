@@ -1,0 +1,21 @@
+<%= erb :index %>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>キーワード</th>
+      <th>障害件数</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% i = 0 %>
+    <% @list_word.each do |word| %>
+      <% i += 1 %>
+      <tr>
+        <td><%= i %></td>
+        <td><a href="./stats?q=<%= h word[0] %>&ym=<%= h params[:ym] %>"><%= h word[0] %></a></td>
+        <td><%= h word[1] %>件</td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
