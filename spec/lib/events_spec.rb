@@ -88,7 +88,7 @@ describe Events do
   describe "#search_word" do
     it "summaryカラムを全文検索し、マッチしたレコードが返されること" do
       @events.import_csv(TEST_CSV_1_PATH)
-      record = @events.search_word(["概要"]).map {|r| r[:_key]}
+      record = @events.search_word(["イベント"]).map {|r| r[:_key]}
       record.should == ["2012010100"]
     end
 
@@ -127,17 +127,17 @@ describe Events do
   describe "#count_word_period" do
     it "指定したワードごとのイベント件数がハッシュで返されること"do
       @events.import_csv(TEST_CSV_2_PATH)
-      @events.count_word_period("2012", "01", [["ゲートボール"], ["投げる"]]).should == {"ゲートボール"=> 3, "投げる"=> 2}
+      @events.count_word_period("2012", "01", [["ゲートボール"], ["ドミノ"]]).should == {"ゲートボール"=> 3, "ドミノ"=> 2}
     end
 
     it "イベントは指定した年月のみで検索されること" do
       @events.import_csv(TEST_CSV_2_PATH)
-      @events.count_word_period("2012", "01", [["メール"]]).should == {"メール"=> 2}
+      @events.count_word_period("2012", "01", [["ゲートボール"]]).should == {"ゲートボール"=> 3}
     end
 
     it "同義語をまとめて検索することができること" do
       @events.import_csv(TEST_CSV_2_PATH)
-      @events.count_word_period("2012", "01",[["メール","OutlookExpress"]]).should == {"メール" => 3}
+      @events.count_word_period("2012", "01",[["結果","結論"]]).should == {"結果" => 4}
     end
   end
 
