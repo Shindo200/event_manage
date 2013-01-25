@@ -93,9 +93,9 @@ class Events
       host_person = record.key
       hash_sup[host_person] = record.n_sub_records
     end
-    host_people = hash_sup.sort_by {|k,v| v}
-    host_people = host_people.reverse.slice(0...limit)
-    host_people
+    host_persons = hash_sup.sort_by {|k,v| v}
+    host_persons = host_persons.reverse.slice(0...limit)
+    host_persons
   end
 
   def paginate(events, opts = {})
