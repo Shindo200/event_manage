@@ -12,10 +12,10 @@
       <col width="80">
     </colgroup>
     <tbody>
-      <% @departments.each do |department| %>
+      <% @teams.each do |team| %>
         <tr>
-          <td><%= h department[0] %></td>
-          <td><%= department[1] %>件</td>
+          <td><%= h team[0] %></td>
+          <td><%= team[1] %>件</td>
         </tr>
       <% end %>
     </tbody>
@@ -28,10 +28,10 @@
       <col width="80">
     </colgroup>
     <tbody>
-      <% @supporters.each do |supporter| %>
+      <% @host_persons.each do |host_person| %>
         <tr>
-          <td><%= h supporter[0] %></td>
-          <td><%= supporter[1] %>件</td>
+          <td><%= h host_person[0] %></td>
+          <td><%= host_person[1] %>件</td>
         </tr>
       <% end %>
     </tbody>
@@ -50,7 +50,7 @@
           <td>
             <div class="event-summary"><%= summary_escape(event[:summary], @keyword) %></div>
             <div class="event-time"><%= event[:datetime].strftime("%Y-%m-%d %R") %></div>
-            <div class="event-description"><%= description_escape(event[:description], @keyword) %></div>
+            <div class="event-team"><%= description_escape(event[:team], @keyword) %></div>
           </td>
           <td>
             <form action="good?q=<%= uri_escape params[:q] %>" method="post">

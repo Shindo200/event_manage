@@ -48,8 +48,8 @@ class OperationManage < Sinatra::Base
     end_time = start_time + (60 * 60 * 24 * 31)
     records = @events.search_word(@keyword, {:start_time => start_time, :end_time => end_time})
     @result_size = records.size
-    @departments = @events.get_top_department(records, 5)
-    @supporters = @events.get_top_supporter(records, 5)
+    @teams = @events.get_top_team(records, 5)
+    @persons = @events.get_top_person(records, 5)
     @current_page = params[:page].to_i
     @current_page = 1 if @current_page <= 0
     @last_page = ((@result_size - 1) / SHOW_EVENTS) + 1
@@ -76,8 +76,8 @@ class OperationManage < Sinatra::Base
     end
     records = @events.search_word(@keyword, {:operator => :and, :start_time => start_time, :end_time => end_time})
     @result_size = records.size
-    @departments = @events.get_top_department(records, 5)
-    @supporters = @events.get_top_supporter(records, 5)
+    @teams = @events.get_top_team(records, 5)
+    @host_persons = @events.get_top_host_person(records, 5)
     @current_page = params[:page].to_i
     @current_page = 1 if @current_page <= 0
     @last_page = ((@result_size - 1) / SHOW_EVENTS) + 1
