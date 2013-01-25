@@ -50,7 +50,7 @@
           <td>
             <div class="event-summary"><%= summary_escape(event[:summary], @keyword) %></div>
             <div class="event-time"><%= event[:datetime].strftime("%Y-%m-%d %R") %></div>
-            <div class="event-team"><%= description_escape(event[:team], @keyword) %></div>
+            <div class="event-result"><%= description_escape(event[:result], @keyword) %></div>
           </td>
           <td>
             <form action="good?q=<%= uri_escape params[:q] %>" method="post">
