@@ -213,7 +213,7 @@ class Events
   end
 
   def scan_team(summary)
-    summary.scan(/^(.*?(部|支局))/).flatten.shift
+    summary.scan(/^(.*?(チーム))/).flatten.shift
   end
 
   def define_schema
