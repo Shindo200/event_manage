@@ -1,0 +1,27 @@
+!!! 5
+%html
+%head
+  %meta{:charset => "utf-8"}
+  %title
+    = APP_NAME
+  %link{:href => "bootstrap/css/bootstrap.min.css", :rel => "stylesheet"}
+  <!--[if lte IE 8]>
+  %link{:href => "bootstrap/css/bootstrap-ie6.css", :rel => "stylesheet"}
+  <![endif]-->
+  %link{:href => "css/application.css", :rel => "stylesheet"}
+%body
+  .container
+    .page-header
+      %h1
+        %a{:href => "<%= APP_HOME %>"}
+          = APP_NAME
+        %small
+          = APP_DESCRIPTION
+    - if flash[:notice]
+      .text-error
+        = flash[:notice]
+    .row-fluid
+      = yield
+  .page-footer
+    %p
+      = APP_COPYRIGHT
