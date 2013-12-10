@@ -1,6 +1,6 @@
 # encoding: utf-8
 require File.expand_path("../../spec_helper", __FILE__)
-require 'lib/operation_manage/application_helper'
+require 'lib/event_manage/application_helper'
 
 module EventManage
   class DummyClass; end

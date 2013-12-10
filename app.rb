@@ -4,7 +4,7 @@ require 'sinatra'
 require 'rack-flash'
 require 'time'
 require 'config/config'
-require 'lib/operation_manage'
+require 'lib/event_manage'
 
 module EventManage
   class Application < Sinatra::Base
