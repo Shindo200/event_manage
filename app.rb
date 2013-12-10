@@ -25,27 +25,6 @@ class OperationManage < Sinatra::Base
     haml :index
   end
 
-  get '/stats' do
-    redirect '/' unless params[:q]
-    redirect '/' unless params[:ym]
-
-    @keyword = SEARCH_WORD.assoc(params[:q])
-    year = to_year(params[:ym])
-    month = to_month(params[:ym])
-    start_time = Time.parse("#{year}#{month}01")
-    end_time = start_time + (60 * 60 * 24 * 31)
-    records = @events.search_word(@keyword, {:start_time => start_time, :end_time => end_time})
-    @result_size = records.size
-    @teams = @events.get_top_team(records, 5)
-    @persons = @events.get_top_person(records, 5)
-    @current_page = params[:page].to_i
-    @current_page = 1 if @current_page <= 0
-    @last_page = ((@result_size - 1) / SHOW_EVENTS) + 1
-    @paged_events = @events.paginate(records, {:page => @current_page})
-
-    haml :stats
-  end
-
   get '/search' do
     redirect '/' unless params[:q]
 
