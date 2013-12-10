@@ -8,11 +8,9 @@ TEST_CSV_3_PATH = "#{APP_ROOT}/spec/tmp/20121030.csv"
 
 def delete_test_database
   begin
-    # 予定外のファイルが消えると泣けるので、DB_ROOTがnilの場合はエラー扱いにする
+    # 想定していないファイルが消えることを防ぐため、DB_ROOT がnilの場合はエラー扱いにする
     raise unless DB_ROOT
-    Dir::glob("#{DB_ROOT}/test.db*").each do |f|
-      File.delete(f)
-    end
+    Dir::glob("#{DB_ROOT}/test.db*").each { |f| File.delete(f) }
   rescue
     puts "\nWARNING: Cannot load DB_ROOT. Please set DB_ROOT."
   end
