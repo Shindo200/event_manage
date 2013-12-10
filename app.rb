@@ -22,7 +22,7 @@ class OperationManage < Sinatra::Base
   get '/' do
     load_csv(@events)
 
-    erb :index
+    haml :index
   end
 
   get '/list' do

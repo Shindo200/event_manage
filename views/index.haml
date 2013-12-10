@@ -1,0 +1,11 @@
+%form{:action => "search", :method => "get", :class => "search-box"}
+  .input-append.application-title
+    .date-range
+      %label
+        開始年月
+        %input{:type => "date", :class => "span2", :name => "start_time"}
+      %label
+        終了年月
+        %input{:type => "date", :class => "span2", :name => "end_time"}
+    %input{:type => "text", :class => "span4", :name => "q"}
+    %button{:type => "submit", :class => "btn"} Search
