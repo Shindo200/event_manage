@@ -23,8 +23,8 @@ module EventManage
     describe "#open_csv" do
       it "CSV の内容が配列で返されること" do
         assert_ary = [
-          ["項番","ID","日時","イベント名","イベントコード","開催者","チーム名","途中経過","結果","備考"],
-          ["1","2012010100","2012/01/01 00:00:00","イベントテスト","0000","shindo200","チームテスト","経過テスト","結果テスト","備考テスト"]
+          ["項番","イベントID","開催日時","イベント名","告知サイトURL","開催者","開催グループ","開催地区","概要","備考"],
+          ["1","2012010100","2012/01/01 00:00:00","イベントテスト","http://www.example.com/","shindo200","グループテスト","地区テスト","概要テスト","備考テスト"]
         ]
         expect(@events.send(:open_csv, TEST_CSV_1_PATH)).to eq assert_ary
       end
@@ -55,11 +55,11 @@ module EventManage
         @events.import_csv(TEST_CSV_1_PATH)
         expect(@events["2012010100"].datetime).to eq Time.parse("2012/01/01 00:00:00")
         expect(@events["2012010100"].summary).to eq "イベントテスト"
-        expect(@events["2012010100"].code).to eq "0000"
+        expect(@events["2012010100"].code).to eq "http://www.example.com/"
         expect(@events["2012010100"].host_person).to eq "shindo200"
-        expect(@events["2012010100"].team).to eq "チームテスト"
-        expect(@events["2012010100"].progress).to eq "経過テスト"
-        expect(@events["2012010100"].result).to eq "結果テスト"
+        expect(@events["2012010100"].team).to eq "グループテスト"
+        expect(@events["2012010100"].progress).to eq "地区テスト"
+        expect(@events["2012010100"].result).to eq "概要テスト"
         expect(@events["2012010100"].note).to eq "備考テスト"
       end
 
@@ -67,22 +67,22 @@ module EventManage
         @events.import_csv(TEST_CSV_3_PATH)
         expect(@events["2012010100"].datetime).to eq Time.parse("2012/01/01 00:00:00")
         expect(@events["2012010100"].summary).to eq "イベントテスト"
-        expect(@events["2012010100"].code).to eq "0000"
+        expect(@events["2012010100"].code).to eq "http://www.example.com/"
         expect(@events["2012010100"].host_person).to eq "shindo200"
-        expect(@events["2012010100"].team).to eq "チームテスト"
-        expect(@events["2012010100"].progress).to eq "経過テスト"
-        expect(@events["2012010100"].result).to eq "結果テスト"
+        expect(@events["2012010100"].team).to eq "グループテスト"
+        expect(@events["2012010100"].progress).to eq "地区テスト"
+        expect(@events["2012010100"].result).to eq "概要テスト"
         expect(@events["2012010100"].note).to eq "備考テスト"
       end
 
       it "チーム名が空のレコードは、見出しからチーム名に相当するものを探して、インポートすること" do
         @events.import_csv(TEST_CSV_2_PATH)
-        expect(@events["2012010127"].team).to eq "Aチーム"
+        expect(@events["2012010127"].team).to eq "Aグループ"
       end
 
       it "チーム名が'Null'のレコードは、概要からチーム名に相当するものを探して、インポートすること" do
         @events.import_csv(TEST_CSV_2_PATH)
-        expect(@events["2012010129"].team).to eq "Aチーム"
+        expect(@events["2012010129"].team).to eq "Aグループ"
       end
     end
 
@@ -95,13 +95,13 @@ module EventManage
 
       it "progressカラムを全文検索し、マッチしたレコードが返されること" do
         @events.import_csv(TEST_CSV_1_PATH)
-        record = @events.search_word(["経過"]).map {|r| r[:_key]}
+        record = @events.search_word(["地区"]).map {|r| r[:_key]}
         expect(record).to eq ["2012010100"]
       end
 
       it "resultカラムを全文検索し、マッチしたレコードが返されること" do
         @events.import_csv(TEST_CSV_1_PATH)
-        record = @events.search_word(["結果"]).map {|r| r[:_key]}
+        record = @events.search_word(["概要"]).map {|r| r[:_key]}
         expect(record).to eq ["2012010100"]
       end
 
@@ -138,31 +138,31 @@ module EventManage
 
       it "同義語をまとめて検索することができること" do
         @events.import_csv(TEST_CSV_2_PATH)
-        expect(@events.count_word_period("2012", "01",[["結果","結論"]])).to eq Hash("結果" => 4)
+        expect(@events.count_word_period("2012", "01",[["概要","要説"]])).to eq Hash("概要" => 4)
       end
     end
 
     describe "#get_top_team" do
-      it "イベントの中で参加の多いチームが順に返されること" do
+      it "イベントの中で参加の多いグループが順に返されること" do
         @events.import_csv(TEST_CSV_2_PATH)
         (2012010126..2012010129).each {|id| @events.delete(id.to_s)}
         records = @events.get_all_records
-        expect(@events.get_top_team(records, 3)).to eq [["Aチーム", 3], ["Bチーム", 2], ["Cチーム", 1]]
+        expect(@events.get_top_team(records, 3)).to eq [["Aグループ", 3], ["Bグループ", 2], ["Cグループ", 1]]
       end
 
-      it "返されるチームの数を指定することができること" do
+      it "返されるグループの数を指定することができること" do
         @events.import_csv(TEST_CSV_2_PATH)
         (2012010126..2012010129).each {|id| @events.delete(id.to_s)}
         records = @events.get_all_records
-        expect(@events.get_top_team(records, 1)).to eq [["Aチーム", 3]]
+        expect(@events.get_top_team(records, 1)).to eq [["Aグループ", 3]]
       end
 
-      it "チーム名が入力されていなかったレコードが含まれないこと" do
+      it "グループ名が入力されていなかったレコードが含まれないこと" do
         @events.import_csv(TEST_CSV_2_PATH)
         (2012010120..2012010124).each {|id| @events.delete(id.to_s)}
         (2012010127..2012010129).each {|id| @events.delete(id.to_s)}
         records = @events.get_all_records
-        expect(@events.get_top_team(records, 2)).to eq [["Cチーム", 1]]
+        expect(@events.get_top_team(records, 2)).to eq [["Cグループ", 1]]
       end
     end
 
@@ -220,30 +220,30 @@ module EventManage
     end
 
     describe "#is_valid_team?" do
-      it "チーム名が空の場合はfalseを返すこと" do
+      it "グループ名が空の場合はfalseを返すこと" do
         expect(@events.send(:is_valid_team?, nil)).to be_false
       end
 
-      it "チーム名が'Null'の場合はfalseを返すこと" do
+      it "グループ名が'Null'の場合はfalseを返すこと" do
         expect(@events.send(:is_valid_team?, "Null")).to be_false
       end
 
-      it "有効なチーム名の場合はtrueを返すこと" do
-        expect(@events.send(:is_valid_team?, "Aチーム")).to be_true
+      it "有効なグループ名の場合はtrueを返すこと" do
+        expect(@events.send(:is_valid_team?, "Aグループ")).to be_true
       end
     end
 
     describe "#scan_team" do
-      it "先頭にチーム名が書かれていた場合はそのチーム名を返すこと" do
-        expect(@events.send(:scan_team, "Aチーム Pat 今日も良い天気。")).to eq "Aチーム"
+      it "イベント名の先頭にグループ名が書かれているならば、そのグループ名を返すこと" do
+        expect(@events.send(:scan_team, "Aグループ総選挙")).to eq "Aグループ"
       end
 
-      it "チーム名が2回書かれていた場合は最初のチーム名を返すこと" do
-        expect(@events.send(:scan_team, "Aチーム Pat Bチームのメンバーが怒り気味。")).to eq "Aチーム"
+      it "グループ名が2回書かれていた場合は最初のグループ名を返すこと" do
+        expect(@events.send(:scan_team, "Aグループ&Bグループ総選挙")).to eq "Aグループ"
       end
 
-      it "チーム名が書かれていない場合はnilを返すこと" do
-        expect(@events.send(:scan_team, "* Pat PCが壊れた。")).to be_nil
+      it "グループ名が書かれていない場合はnilを返すこと" do
+        expect(@events.send(:scan_team, "テスト大会")).to be_nil
       end
     end
 

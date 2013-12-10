@@ -17,14 +17,14 @@ module EventManage
       csv = open_csv(path)
       csv_head = csv.shift
       column_index = {
-        :key => csv_head.index("ID"),
-        :datetime => csv_head.index("日時"),
+        :key => csv_head.index("イベントID"),
+        :datetime => csv_head.index("開催日時"),
         :summary => csv_head.index("イベント名"),
-        :code => csv_head.index("イベントコード"),
+        :code => csv_head.index("告知サイトURL"),
         :host_person => csv_head.index("開催者"),
-        :team => csv_head.index("チーム名"),
-        :progress => csv_head.index("途中経過"),
-        :result => csv_head.index("結果"),
+        :team => csv_head.index("開催グループ"),
+        :progress => csv_head.index("開催地区"),
+        :result => csv_head.index("概要"),
         :note => csv_head.index("備考")
       }
       csv.each do |col|
@@ -32,7 +32,7 @@ module EventManage
         # team とsummary だけ次の処理で使うので先に取得
         team = col[column_index[:team]]
         summary = col[column_index[:summary]]
-        # 無効な部署名の場合は概要に書かれている部署名を利用する
+        # 無効な開催グループ名の場合は概要に書かれている開催グループ名を利用する
         team = scan_team(summary) unless is_valid_team?(team)
 
         attributes = {
@@ -81,7 +81,7 @@ module EventManage
         team = record.key
         hash_dep[team] = record.n_sub_records
       end
-      # 部署が空の場合の項目があるので削除
+      # 開催グループ名が空の場合の項目があるので削除
       hash_dep.delete(nil)
       teams = hash_dep.sort_by {|k,v| v}
       teams = teams.reverse.slice(0...limit)
@@ -214,7 +214,7 @@ module EventManage
     end
 
     def scan_team(summary)
-      summary.scan(/^(.*?(チーム))/).flatten.shift
+      summary.scan(/^(.*?(グループ))/).flatten.shift
     end
 
     def define_schema
