@@ -12,6 +12,7 @@ def delete_test_database
     raise unless DB_ROOT
     Dir::glob("#{DB_ROOT}/test.db*").each { |f| File.delete(f) }
   rescue
-    puts "\nWARNING: Cannot load DB_ROOT. Please set DB_ROOT."
+    warn "WARNING: データベースファイルの保存先が指定されていません。"
+    warn "テストデータベースファイルの削除処理を中止しました。"
   end
 end
