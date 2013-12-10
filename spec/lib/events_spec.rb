@@ -3,255 +3,257 @@ require File.expand_path("../../spec_helper", __FILE__)
 require 'lib/operation_manage/events'
 require 'time'
 
-describe Events do
-  before :all do
-    delete_test_database if File.exist?("#{DB_ROOT}/test.db")
-  end
-
-  before do
-    @events = Events.new("test.db")
-    @events.truncate
-  end
-
-  describe "#initialize" do
-    it "DB が作られること" do
-      expect(File.exist?("#{DB_ROOT}/test.db")).to be_true
-    end
-  end
-
-  describe "#open_csv" do
-    it "CSV の内容が配列で返されること" do
-      assert_ary = [
-        ["項番","ID","日時","イベント名","イベントコード","開催者","チーム名","途中経過","結果","備考"],
-        ["1","2012010100","2012/01/01 00:00:00","イベントテスト","0000","shindo200","チームテスト","経過テスト","結果テスト","備考テスト"]
-      ]
-      expect(@events.send(:open_csv, TEST_CSV_1_PATH)).to eq assert_ary
-    end
-  end
-
-  describe "#import_csv" do
-    it "テーブルにレコードが追加されること" do
-      expect(@events.size).to eq 0
-      @events.import_csv(TEST_CSV_1_PATH)
-      expect(@events.size).to eq 1
+module OperationManage
+  describe Events do
+    before :all do
+      delete_test_database if File.exist?("#{DB_ROOT}/test.db")
     end
 
-    it "テーブルに存在しているデータをインポートした場合、DB に保存されないこと" do
-      expect(@events.size).to eq 0
-      @events.import_csv(TEST_CSV_1_PATH)
-      @events.import_csv(TEST_CSV_1_PATH)
-      expect(@events.size).to eq 1
+    before do
+      @events = Events.new("test.db")
+      @events.truncate
     end
 
-    it "テーブルに存在していないデータをインポートした場合、DB に保存されること" do
-      expect(@events.size).to eq 0
-      @events.import_csv(TEST_CSV_1_PATH)
-      @events.import_csv(TEST_CSV_2_PATH)
-      expect(@events.size).to eq 11
+    describe "#initialize" do
+      it "DB が作られること" do
+        expect(File.exist?("#{DB_ROOT}/test.db")).to be_true
+      end
     end
 
-    it "CSVの全ての内容がDBに保存されること" do
-      @events.import_csv(TEST_CSV_1_PATH)
-      expect(@events["2012010100"].datetime).to eq Time.parse("2012/01/01 00:00:00")
-      expect(@events["2012010100"].summary).to eq "イベントテスト"
-      expect(@events["2012010100"].code).to eq "0000"
-      expect(@events["2012010100"].host_person).to eq "shindo200"
-      expect(@events["2012010100"].team).to eq "チームテスト"
-      expect(@events["2012010100"].progress).to eq "経過テスト"
-      expect(@events["2012010100"].result).to eq "結果テスト"
-      expect(@events["2012010100"].note).to eq "備考テスト"
+    describe "#open_csv" do
+      it "CSV の内容が配列で返されること" do
+        assert_ary = [
+          ["項番","ID","日時","イベント名","イベントコード","開催者","チーム名","途中経過","結果","備考"],
+          ["1","2012010100","2012/01/01 00:00:00","イベントテスト","0000","shindo200","チームテスト","経過テスト","結果テスト","備考テスト"]
+        ]
+        expect(@events.send(:open_csv, TEST_CSV_1_PATH)).to eq assert_ary
+      end
     end
 
-    it "カラムの順番が違うCSVを正しくインポートできること" do
-      @events.import_csv(TEST_CSV_3_PATH)
-      expect(@events["2012010100"].datetime).to eq Time.parse("2012/01/01 00:00:00")
-      expect(@events["2012010100"].summary).to eq "イベントテスト"
-      expect(@events["2012010100"].code).to eq "0000"
-      expect(@events["2012010100"].host_person).to eq "shindo200"
-      expect(@events["2012010100"].team).to eq "チームテスト"
-      expect(@events["2012010100"].progress).to eq "経過テスト"
-      expect(@events["2012010100"].result).to eq "結果テスト"
-      expect(@events["2012010100"].note).to eq "備考テスト"
+    describe "#import_csv" do
+      it "テーブルにレコードが追加されること" do
+        expect(@events.size).to eq 0
+        @events.import_csv(TEST_CSV_1_PATH)
+        expect(@events.size).to eq 1
+      end
+
+      it "テーブルに存在しているデータをインポートした場合、DB に保存されないこと" do
+        expect(@events.size).to eq 0
+        @events.import_csv(TEST_CSV_1_PATH)
+        @events.import_csv(TEST_CSV_1_PATH)
+        expect(@events.size).to eq 1
+      end
+
+      it "テーブルに存在していないデータをインポートした場合、DB に保存されること" do
+        expect(@events.size).to eq 0
+        @events.import_csv(TEST_CSV_1_PATH)
+        @events.import_csv(TEST_CSV_2_PATH)
+        expect(@events.size).to eq 11
+      end
+
+      it "CSVの全ての内容がDBに保存されること" do
+        @events.import_csv(TEST_CSV_1_PATH)
+        expect(@events["2012010100"].datetime).to eq Time.parse("2012/01/01 00:00:00")
+        expect(@events["2012010100"].summary).to eq "イベントテスト"
+        expect(@events["2012010100"].code).to eq "0000"
+        expect(@events["2012010100"].host_person).to eq "shindo200"
+        expect(@events["2012010100"].team).to eq "チームテスト"
+        expect(@events["2012010100"].progress).to eq "経過テスト"
+        expect(@events["2012010100"].result).to eq "結果テスト"
+        expect(@events["2012010100"].note).to eq "備考テスト"
+      end
+
+      it "カラムの順番が違うCSVを正しくインポートできること" do
+        @events.import_csv(TEST_CSV_3_PATH)
+        expect(@events["2012010100"].datetime).to eq Time.parse("2012/01/01 00:00:00")
+        expect(@events["2012010100"].summary).to eq "イベントテスト"
+        expect(@events["2012010100"].code).to eq "0000"
+        expect(@events["2012010100"].host_person).to eq "shindo200"
+        expect(@events["2012010100"].team).to eq "チームテスト"
+        expect(@events["2012010100"].progress).to eq "経過テスト"
+        expect(@events["2012010100"].result).to eq "結果テスト"
+        expect(@events["2012010100"].note).to eq "備考テスト"
+      end
+
+      it "チーム名が空のレコードは、見出しからチーム名に相当するものを探して、インポートすること" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        expect(@events["2012010127"].team).to eq "Aチーム"
+      end
+
+      it "チーム名が'Null'のレコードは、概要からチーム名に相当するものを探して、インポートすること" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        expect(@events["2012010129"].team).to eq "Aチーム"
+      end
     end
 
-    it "チーム名が空のレコードは、見出しからチーム名に相当するものを探して、インポートすること" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      expect(@events["2012010127"].team).to eq "Aチーム"
+    describe "#search_word" do
+      it "summary カラムを全文検索し、マッチしたレコードが返されること" do
+        @events.import_csv(TEST_CSV_1_PATH)
+        record = @events.search_word(["イベント"]).map {|r| r[:_key]}
+        expect(record).to eq ["2012010100"]
+      end
+
+      it "progressカラムを全文検索し、マッチしたレコードが返されること" do
+        @events.import_csv(TEST_CSV_1_PATH)
+        record = @events.search_word(["経過"]).map {|r| r[:_key]}
+        expect(record).to eq ["2012010100"]
+      end
+
+      it "resultカラムを全文検索し、マッチしたレコードが返されること" do
+        @events.import_csv(TEST_CSV_1_PATH)
+        record = @events.search_word(["結果"]).map {|r| r[:_key]}
+        expect(record).to eq ["2012010100"]
+      end
+
+      it "noteカラムを全文検索し、マッチしたレコードが返されること" do
+        @events.import_csv(TEST_CSV_1_PATH)
+        record = @events.search_word(["備考"]).map {|r| r[:_key]}
+        expect(record).to eq ["2012010100"]
+      end
+
+      it "マッチしなかった場合は空の配列が返されること" do
+        @events.import_csv(TEST_CSV_1_PATH)
+        record = @events.search_word(["Nothing"]).map {|r| r[:_key]}
+        expect(record).to eq []
+      end
+
+      it "オプションで開始年月を渡した場合、その開始年月以降の入力だけ検索されること" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        start_time = Time.parse("2012/01/01 00:00")
+        record = @events.search_word(["ゲートボール"], {:start_time => start_time}).map {|r| r[:_key]}
+        expect(record).to eq ["2012010120", "2012010121", "2012010124", "2012010125"]
+      end
     end
 
-    it "チーム名が'Null'のレコードは、概要からチーム名に相当するものを探して、インポートすること" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      expect(@events["2012010129"].team).to eq "Aチーム"
-    end
-  end
+    describe "#count_word_period" do
+      it "指定したワードごとのイベント件数がハッシュで返されること"do
+        @events.import_csv(TEST_CSV_2_PATH)
+        expect(@events.count_word_period("2012", "01", [["ゲートボール"], ["ドミノ"]])).to eq Hash("ゲートボール"=> 3, "ドミノ"=> 2)
+      end
 
-  describe "#search_word" do
-    it "summary カラムを全文検索し、マッチしたレコードが返されること" do
-      @events.import_csv(TEST_CSV_1_PATH)
-      record = @events.search_word(["イベント"]).map {|r| r[:_key]}
-      expect(record).to eq ["2012010100"]
-    end
+      it "イベントは指定した年月のみで検索されること" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        expect(@events.count_word_period("2012", "01", [["ゲートボール"]])).to eq Hash("ゲートボール"=> 3)
+      end
 
-    it "progressカラムを全文検索し、マッチしたレコードが返されること" do
-      @events.import_csv(TEST_CSV_1_PATH)
-      record = @events.search_word(["経過"]).map {|r| r[:_key]}
-      expect(record).to eq ["2012010100"]
+      it "同義語をまとめて検索することができること" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        expect(@events.count_word_period("2012", "01",[["結果","結論"]])).to eq Hash("結果" => 4)
+      end
     end
 
-    it "resultカラムを全文検索し、マッチしたレコードが返されること" do
-      @events.import_csv(TEST_CSV_1_PATH)
-      record = @events.search_word(["結果"]).map {|r| r[:_key]}
-      expect(record).to eq ["2012010100"]
+    describe "#get_top_team" do
+      it "イベントの中で参加の多いチームが順に返されること" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        (2012010126..2012010129).each {|id| @events.delete(id.to_s)}
+        records = @events.get_all_records
+        expect(@events.get_top_team(records, 3)).to eq [["Aチーム", 3], ["Bチーム", 2], ["Cチーム", 1]]
+      end
+
+      it "返されるチームの数を指定することができること" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        (2012010126..2012010129).each {|id| @events.delete(id.to_s)}
+        records = @events.get_all_records
+        expect(@events.get_top_team(records, 1)).to eq [["Aチーム", 3]]
+      end
+
+      it "チーム名が入力されていなかったレコードが含まれないこと" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        (2012010120..2012010124).each {|id| @events.delete(id.to_s)}
+        (2012010127..2012010129).each {|id| @events.delete(id.to_s)}
+        records = @events.get_all_records
+        expect(@events.get_top_team(records, 2)).to eq [["Cチーム", 1]]
+      end
     end
 
-    it "noteカラムを全文検索し、マッチしたレコードが返されること" do
-      @events.import_csv(TEST_CSV_1_PATH)
-      record = @events.search_word(["備考"]).map {|r| r[:_key]}
-      expect(record).to eq ["2012010100"]
+    describe "#get_top_supporter" do
+      it "指定したイベントの中で開催数の多い開催者が順に返されること" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        (2012010126..2012010129).each {|id| @events.delete(id.to_s)}
+        records = @events.get_all_records
+        expect(@events.get_top_host_person(records, 3)).to eq [["Pat", 3], ["Emi", 2], ["Andy", 1]]
+      end
+
+      it "返される開催者の数を指定することができること" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        (2012010126..2012010129).each {|id| @events.delete(id.to_s)}
+        records = @events.get_all_records
+        expect(@events.get_top_host_person(records, 1)).to eq [["Pat", 3]]
+      end
     end
 
-    it "マッチしなかった場合は空の配列が返されること" do
-      @events.import_csv(TEST_CSV_1_PATH)
-      record = @events.search_word(["Nothing"]).map {|r| r[:_key]}
-      expect(record).to eq []
+    describe "#up_good_count" do
+      it "goodが0から1に増えること" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        expect(@events["2012010120"][:good]).to eq 0
+        @events.up_good_count("2012010120")
+        expect(@events["2012010120"][:good]).to eq 1
+      end
+
+      it "2回実行するとgoodが0から2に増えること" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        expect(@events["2012010120"][:good]).to eq 0
+        @events.up_good_count("2012010120")
+        @events.up_good_count("2012010120")
+        expect(@events["2012010120"][:good]).to eq 2
+      end
     end
 
-    it "オプションで開始年月を渡した場合、その開始年月以降の入力だけ検索されること" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      start_time = Time.parse("2012/01/01 00:00")
-      record = @events.search_word(["ゲートボール"], {:start_time => start_time}).map {|r| r[:_key]}
-      expect(record).to eq ["2012010120", "2012010121", "2012010124", "2012010125"]
-    end
-  end
+    describe "#down_good_count" do
+      it "goodが1から0に減ること" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        @events.up_good_count("2012010120")
+        expect(@events["2012010120"][:good]).to eq 1
+        @events.down_good_count("2012010120")
+        expect(@events["2012010120"][:good]).to eq 0
+      end
 
-  describe "#count_word_period" do
-    it "指定したワードごとのイベント件数がハッシュで返されること"do
-      @events.import_csv(TEST_CSV_2_PATH)
-      expect(@events.count_word_period("2012", "01", [["ゲートボール"], ["ドミノ"]])).to eq Hash("ゲートボール"=> 3, "ドミノ"=> 2)
-    end
-
-    it "イベントは指定した年月のみで検索されること" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      expect(@events.count_word_period("2012", "01", [["ゲートボール"]])).to eq Hash("ゲートボール"=> 3)
-    end
-
-    it "同義語をまとめて検索することができること" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      expect(@events.count_word_period("2012", "01",[["結果","結論"]])).to eq Hash("結果" => 4)
-    end
-  end
-
-  describe "#get_top_team" do
-    it "イベントの中で参加の多いチームが順に返されること" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      (2012010126..2012010129).each {|id| @events.delete(id.to_s)}
-      records = @events.get_all_records
-      expect(@events.get_top_team(records, 3)).to eq [["Aチーム", 3], ["Bチーム", 2], ["Cチーム", 1]]
+      it "2回実行するとgoodが2から0に減ること" do
+        @events.import_csv(TEST_CSV_2_PATH)
+        @events.up_good_count("2012010120")
+        @events.up_good_count("2012010120")
+        expect(@events["2012010120"][:good]).to eq 2
+        @events.down_good_count("2012010120")
+        @events.down_good_count("2012010120")
+        expect(@events["2012010120"][:good]).to eq 0
+      end
     end
 
-    it "返されるチームの数を指定することができること" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      (2012010126..2012010129).each {|id| @events.delete(id.to_s)}
-      records = @events.get_all_records
-      expect(@events.get_top_team(records, 1)).to eq [["Aチーム", 3]]
+    describe "#is_valid_team?" do
+      it "チーム名が空の場合はfalseを返すこと" do
+        expect(@events.send(:is_valid_team?, nil)).to be_false
+      end
+
+      it "チーム名が'Null'の場合はfalseを返すこと" do
+        expect(@events.send(:is_valid_team?, "Null")).to be_false
+      end
+
+      it "有効なチーム名の場合はtrueを返すこと" do
+        expect(@events.send(:is_valid_team?, "Aチーム")).to be_true
+      end
     end
 
-    it "チーム名が入力されていなかったレコードが含まれないこと" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      (2012010120..2012010124).each {|id| @events.delete(id.to_s)}
-      (2012010127..2012010129).each {|id| @events.delete(id.to_s)}
-      records = @events.get_all_records
-      expect(@events.get_top_team(records, 2)).to eq [["Cチーム", 1]]
-    end
-  end
+    describe "#scan_team" do
+      it "先頭にチーム名が書かれていた場合はそのチーム名を返すこと" do
+        expect(@events.send(:scan_team, "Aチーム Pat 今日も良い天気。")).to eq "Aチーム"
+      end
 
-  describe "#get_top_supporter" do
-    it "指定したイベントの中で開催数の多い開催者が順に返されること" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      (2012010126..2012010129).each {|id| @events.delete(id.to_s)}
-      records = @events.get_all_records
-      expect(@events.get_top_host_person(records, 3)).to eq [["Pat", 3], ["Emi", 2], ["Andy", 1]]
+      it "チーム名が2回書かれていた場合は最初のチーム名を返すこと" do
+        expect(@events.send(:scan_team, "Aチーム Pat Bチームのメンバーが怒り気味。")).to eq "Aチーム"
+      end
+
+      it "チーム名が書かれていない場合はnilを返すこと" do
+        expect(@events.send(:scan_team, "* Pat PCが壊れた。")).to be_nil
+      end
     end
 
-    it "返される開催者の数を指定することができること" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      (2012010126..2012010129).each {|id| @events.delete(id.to_s)}
-      records = @events.get_all_records
-      expect(@events.get_top_host_person(records, 1)).to eq [["Pat", 3]]
-    end
-  end
-
-  describe "#up_good_count" do
-    it "goodが0から1に増えること" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      expect(@events["2012010120"][:good]).to eq 0
-      @events.up_good_count("2012010120")
-      expect(@events["2012010120"][:good]).to eq 1
+    after do
+      @events.close_db
     end
 
-    it "2回実行するとgoodが0から2に増えること" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      expect(@events["2012010120"][:good]).to eq 0
-      @events.up_good_count("2012010120")
-      @events.up_good_count("2012010120")
-      expect(@events["2012010120"][:good]).to eq 2
+    after :all do
+      # テスト用DB をクリアする
+      delete_test_database
     end
-  end
-
-  describe "#down_good_count" do
-    it "goodが1から0に減ること" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      @events.up_good_count("2012010120")
-      expect(@events["2012010120"][:good]).to eq 1
-      @events.down_good_count("2012010120")
-      expect(@events["2012010120"][:good]).to eq 0
-    end
-
-    it "2回実行するとgoodが2から0に減ること" do
-      @events.import_csv(TEST_CSV_2_PATH)
-      @events.up_good_count("2012010120")
-      @events.up_good_count("2012010120")
-      expect(@events["2012010120"][:good]).to eq 2
-      @events.down_good_count("2012010120")
-      @events.down_good_count("2012010120")
-      expect(@events["2012010120"][:good]).to eq 0
-    end
-  end
-
-  describe "#is_valid_team?" do
-    it "チーム名が空の場合はfalseを返すこと" do
-      expect(@events.send(:is_valid_team?, nil)).to be_false
-    end
-
-    it "チーム名が'Null'の場合はfalseを返すこと" do
-      expect(@events.send(:is_valid_team?, "Null")).to be_false
-    end
-
-    it "有効なチーム名の場合はtrueを返すこと" do
-      expect(@events.send(:is_valid_team?, "Aチーム")).to be_true
-    end
-  end
-
-  describe "#scan_team" do
-    it "先頭にチーム名が書かれていた場合はそのチーム名を返すこと" do
-      expect(@events.send(:scan_team, "Aチーム Pat 今日も良い天気。")).to eq "Aチーム"
-    end
-
-    it "チーム名が2回書かれていた場合は最初のチーム名を返すこと" do
-      expect(@events.send(:scan_team, "Aチーム Pat Bチームのメンバーが怒り気味。")).to eq "Aチーム"
-    end
-
-    it "チーム名が書かれていない場合はnilを返すこと" do
-      expect(@events.send(:scan_team, "* Pat PCが壊れた。")).to be_nil
-    end
-  end
-
-  after do
-    @events.close_db
-  end
-
-  after :all do
-    # テスト用DB をクリアする
-    delete_test_database
   end
 end
