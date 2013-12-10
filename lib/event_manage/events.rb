@@ -14,39 +14,31 @@ module EventManage
     end
 
     def import_csv(path)
-      csv = open_csv(path)
-      csv_head = csv.shift
-      column_index = {
-        :event_id => csv_head.index("イベントID"),
-        :datetime => csv_head.index("開催日時"),
-        :title => csv_head.index("イベント名"),
-        :uri => csv_head.index("告知サイトURL"),
-        :organizer => csv_head.index("開催者"),
-        :community => csv_head.index("開催グループ"),
-        :venue => csv_head.index("開催地区"),
-        :summary => csv_head.index("概要"),
-        :note => csv_head.index("備考")
-      }
-      csv.each do |col|
-        event_id = col[column_index[:event_id]]
-        # community とtitle だけ次の処理で使うので先に取得
-        community = col[column_index[:community]]
-        title = col[column_index[:title]]
-        # 無効な開催グループ名の場合は概要に書かれている開催グループ名を利用する
-        community = scan_community(title) unless is_valid_community?(community)
+      csv = CSV.open(path, "r",
+        external_encoding: "CP932",
+        internal_encoding: "UTF-8",
+        headers: true
+      )
+
+      csv.each do |row|
+        # 開催グループ名が無効の場合は、概要に書かれている開催グループ名を取得する。
+        community = row["開催グループ"]
+        community = scan_community(row["イベント名"]) unless is_valid_community?(community)
 
         attributes = {
-          :datetime => Time.parse(col[column_index[:datetime]]),
-          :title => title,
-          :uri => col[column_index[:uri]],
-          :organizer => col[column_index[:organizer]],
-          :community => community,
-          :venue => col[column_index[:venue]],
-          :summary => col[column_index[:summary]],
-          :note => col[column_index[:note]],
-          :good => 0
+          datetime:   Time.parse(row["開催日時"]),
+          title:      row["イベント名"],
+          uri:        row["告知サイトURL"],
+          organizer:  row["開催者"],
+          community:  community,
+          venue:      row["開催地区"],
+          summary:    row["概要"],
+          note:       row["備考"],
+          good:       0
         }
-        @events.add(event_id, attributes)
+
+        # Events データベースに、key がイベントIDとなるデータを追加する。
+        @events.add(row["イベントID"], attributes)
       end
     end
 
@@ -157,11 +149,6 @@ module EventManage
         define_schema
       end
       @events = Groonga["Events"]
-    end
-
-    def open_csv(path)
-      csv = CSV.open(path, 'r:CP932:UTF-8')
-      csv.to_a
     end
 
     def select_period(start_time, end_time)

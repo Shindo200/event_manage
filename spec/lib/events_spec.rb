@@ -20,16 +20,6 @@ module EventManage
       end
     end
 
-    describe "#open_csv" do
-      it "CSV の内容が配列で返されること" do
-        assert_ary = [
-          ["項番","イベントID","開催日時","イベント名","告知サイトURL","開催者","開催グループ","開催地区","概要","備考"],
-          ["1","2012010100","2012/01/01 00:00:00","イベントテスト","http://www.example.com/","shindo200","グループテスト","地区テスト","概要テスト","備考テスト"]
-        ]
-        expect(@events.send(:open_csv, TEST_CSV_1_PATH)).to eq assert_ary
-      end
-    end
-
     describe "#import_csv" do
       it "テーブルにレコードが追加されること" do
         expect(@events.size).to eq 0
