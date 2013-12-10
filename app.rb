@@ -6,7 +6,7 @@ require 'time'
 require 'config/config'
 require 'lib/operation_manage'
 
-module OperationManage
+module EventManage
   class Application < Sinatra::Base
     enable :sessions
     use Rack::Flash

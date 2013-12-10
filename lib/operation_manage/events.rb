@@ -1,5 +1,5 @@
 # encoding: utf-8
-module OperationManage
+module EventManage
   class Events
     require 'csv'
     require 'time'

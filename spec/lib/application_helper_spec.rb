@@ -2,7 +2,7 @@
 require File.expand_path("../../spec_helper", __FILE__)
 require 'lib/operation_manage/application_helper'
 
-module OperationManage
+module EventManage
   class DummyClass; end
 
   describe ApplicationHelper do

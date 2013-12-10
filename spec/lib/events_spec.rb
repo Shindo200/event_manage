@@ -3,7 +3,7 @@ require File.expand_path("../../spec_helper", __FILE__)
 require 'lib/operation_manage/events'
 require 'time'
 
-module OperationManage
+module EventManage
   describe Events do
     before :all do
       delete_test_database if File.exist?("#{DB_ROOT}/test.db")

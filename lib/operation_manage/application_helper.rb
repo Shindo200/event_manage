@@ -1,5 +1,5 @@
 # encoding: utf-8
-module OperationManage
+module EventManage
   module ApplicationHelper
     require 'uri'
     require 'rack'
