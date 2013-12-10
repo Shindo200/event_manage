@@ -43,8 +43,8 @@ module EventManage
       end
       records = @events.search_word(@keyword, {:operator => :and, :start_time => start_time, :end_time => end_time})
       @result_size = records.size
-      @teams = @events.get_top_team(records, 5)
-      @host_persons = @events.get_top_host_person(records, 5)
+      @communities = @events.get_top_community(records, 5)
+      @organizers = @events.get_top_organizer(records, 5)
       @current_page = params[:page].to_i
       @current_page = 1 if @current_page <= 0
       @last_page = ((@result_size - 1) / SHOW_EVENTS) + 1

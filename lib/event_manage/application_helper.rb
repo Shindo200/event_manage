@@ -25,21 +25,21 @@ module EventManage
       month
     end
 
+    def title_escape(title, words)
+      title = h(title)
+      words = array_escape(words)
+      title = set_match_tag(title, words)
+      title
+    end
+
     def summary_escape(summary, words)
+      # 文字型ではないとsizeが使えないので文字型に変換
+      summary = summary.to_s
+      summary = html_slice(summary)
       summary = h(summary)
       words = array_escape(words)
       summary = set_match_tag(summary, words)
       summary
-    end
-
-    def description_escape(description, words)
-      # 文字型ではないとsizeが使えないので文字型に変換
-      description = description.to_s
-      description = html_slice(description)
-      description = h(description)
-      words = array_escape(words)
-      description = set_match_tag(description, words)
-      description
     end
 
     def array_escape(ary)

@@ -9,24 +9,24 @@
       %col
       %col{:width => "80"}
     %tbody
-      - @teams.each do |team|
+      - @communities.each do |community|
         %tr
           %td
-            = h team[0]
+            = h community[0]
           %td
-            = "#{team[1]}件"
+            = "#{community[1]}件"
   %h4 このイベントで開催が多かった人
   %table.table.table-bordered.table-striped
     %colgroup
       %col
       %col{:width => "80"}
     %tbody
-      - @host_persons.each do |host_person|
+      - @organizers.each do |organizer|
         %tr
           %td
-            = h host_person[0]
+            = h organizer[0]
           %td
-            = "#{host_person[1]}件"
+            = "#{organizer[1]}件"
 .span8
   %h4
     検索
@@ -40,12 +40,12 @@
       - @paged_events.each do |event|
         %tr
           %td
-            .event-summary
-              = summary_escape(event[:summary], @keyword)
+            .event-title
+              = title_escape(event[:title], @keyword)
             .event-time
               = event[:datetime].strftime("%Y-%m-%d %R")
-            .event-result
-              = description_escape(event[:result], @keyword)
+            .event-summary
+              = summary_escape(event[:summary], @keyword)
           %td
             %form{:action => "good?q=#{uri_escape params[:q]}", :method => "post"}
               %input{:type => "hidden", :name => "key", :value => event[:_key]}

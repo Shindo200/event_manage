@@ -17,36 +17,36 @@ module EventManage
       csv = open_csv(path)
       csv_head = csv.shift
       column_index = {
-        :key => csv_head.index("イベントID"),
+        :event_id => csv_head.index("イベントID"),
         :datetime => csv_head.index("開催日時"),
-        :summary => csv_head.index("イベント名"),
-        :code => csv_head.index("告知サイトURL"),
-        :host_person => csv_head.index("開催者"),
-        :team => csv_head.index("開催グループ"),
-        :progress => csv_head.index("開催地区"),
-        :result => csv_head.index("概要"),
+        :title => csv_head.index("イベント名"),
+        :uri => csv_head.index("告知サイトURL"),
+        :organizer => csv_head.index("開催者"),
+        :community => csv_head.index("開催グループ"),
+        :venue => csv_head.index("開催地区"),
+        :summary => csv_head.index("概要"),
         :note => csv_head.index("備考")
       }
       csv.each do |col|
-        key = col[column_index[:key]]
-        # team とsummary だけ次の処理で使うので先に取得
-        team = col[column_index[:team]]
-        summary = col[column_index[:summary]]
+        event_id = col[column_index[:event_id]]
+        # community とtitle だけ次の処理で使うので先に取得
+        community = col[column_index[:community]]
+        title = col[column_index[:title]]
         # 無効な開催グループ名の場合は概要に書かれている開催グループ名を利用する
-        team = scan_team(summary) unless is_valid_team?(team)
+        community = scan_community(title) unless is_valid_community?(community)
 
         attributes = {
           :datetime => Time.parse(col[column_index[:datetime]]),
-          :summary => summary,
-          :code => col[column_index[:code]],
-          :host_person => col[column_index[:host_person]],
-          :team => team,
-          :progress => col[column_index[:progress]],
-          :result => col[column_index[:result]],
+          :title => title,
+          :uri => col[column_index[:uri]],
+          :organizer => col[column_index[:organizer]],
+          :community => community,
+          :venue => col[column_index[:venue]],
+          :summary => col[column_index[:summary]],
           :note => col[column_index[:note]],
           :good => 0
         }
-        @events.add(key, attributes)
+        @events.add(event_id, attributes)
       end
     end
 
@@ -75,28 +75,28 @@ module EventManage
       count_word
     end
 
-    def get_top_team(events, limit)
+    def get_top_community(events, limit)
       hash_dep = {}
-      events.group("team").each do |record|
-        team = record.key
-        hash_dep[team] = record.n_sub_records
+      events.group("community").each do |record|
+        community = record.key
+        hash_dep[community] = record.n_sub_records
       end
       # 開催グループ名が空の場合の項目があるので削除
       hash_dep.delete(nil)
-      teams = hash_dep.sort_by {|k,v| v}
-      teams = teams.reverse.slice(0...limit)
-      teams
+      communities = hash_dep.sort_by {|k,v| v}
+      communities = communities.reverse.slice(0...limit)
+      communities
     end
 
-    def get_top_host_person(events, limit)
+    def get_top_organizer(events, limit)
       hash_sup = {}
-      events.group("host_person").each do |record|
-        host_person = record.key
-        hash_sup[host_person] = record.n_sub_records
+      events.group("organizer").each do |record|
+        organizer = record.key
+        hash_sup[organizer] = record.n_sub_records
       end
-      host_persons = hash_sup.sort_by {|k,v| v}
-      host_persons = host_persons.reverse.slice(0...limit)
-      host_persons
+      organizers = hash_sup.sort_by {|k,v| v}
+      organizers = organizers.reverse.slice(0...limit)
+      organizers
     end
 
     def paginate(events, opts = {})
@@ -201,31 +201,31 @@ module EventManage
     end
 
     def select_target_column(record, word)
+      (record.title =~ word) |
+      (record.venue =~ word) |
       (record.summary =~ word) |
-      (record.progress =~ word) |
-      (record.result =~ word) |
       (record.note =~ word)
     end
 
-    def is_valid_team?(team)
-      return false if team.nil?
-      return false if team == 'Null'
+    def is_valid_community?(community)
+      return false if community.nil?
+      return false if community == 'Null'
       true
     end
 
-    def scan_team(summary)
-      summary.scan(/^(.*?(グループ))/).flatten.shift
+    def scan_community(title)
+      title.scan(/^(.*?(グループ))/).flatten.shift
     end
 
     def define_schema
       Groonga::Schema.create_table("Events", :type => :hash) do |table|
         table.time "datetime"
+        table.text "title"
+        table.string "uri"
+        table.string "organizer"
+        table.string "community"
+        table.text "venue"
         table.text "summary"
-        table.string "code"
-        table.string "host_person"
-        table.string "team"
-        table.text "progress"
-        table.text "result"
         table.text "note"
         table.integer "good"
       end
@@ -234,9 +234,9 @@ module EventManage
         :key_normalize => true,
         :default_tokenizer => "TokenBigram")
       Groonga::Schema.change_table("Terms") do |table|
+        table.index("Events.title")
+        table.index("Events.venue")
         table.index("Events.summary")
-        table.index("Events.progress")
-        table.index("Events.result")
         table.index("Events.note")
       end
     end
