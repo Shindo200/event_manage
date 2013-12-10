@@ -1,6 +1,6 @@
 # encoding: utf-8
 require File.expand_path("../../spec_helper", __FILE__)
-require 'lib/events'
+require 'lib/operation_manage/events'
 require 'time'
 
 describe Events do

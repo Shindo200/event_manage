@@ -5,9 +5,7 @@ require 'rack-flash'
 require 'erb'
 require 'time'
 require 'config/config'
-require 'lib/events'
-require 'lib/application_helper'
-require 'lib/class_expansion'
+require 'lib/operation_manage'
 
 class OperationManage < Sinatra::Base
   enable :sessions
