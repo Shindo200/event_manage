@@ -25,16 +25,6 @@ class OperationManage < Sinatra::Base
     haml :index
   end
 
-  get '/list' do
-    redirect '/' unless params[:ym]
-
-    year = to_year(params[:ym])
-    month = to_month(params[:ym])
-    @list_word = @events.list_word_period(year, month, 20)
-
-    erb :list
-  end
-
   get '/stats' do
     redirect '/' unless params[:q]
     redirect '/' unless params[:ym]
