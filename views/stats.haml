@@ -3,7 +3,7 @@
     %input{:type => "text", :class => "span4", :name => "q", :value => "#{h params[:q]}"}
     %button{:type => "submit", :class => "btn"} Search
 .span3
-  %h4 このイベントで参加が多かったチーム
+  %h4 イベントを頻繁に開催しているグループ
   %table.table.table-bordered.table-striped
     %colgroup
       %col
@@ -15,7 +15,7 @@
             = h community[0]
           %td
             = "#{community[1]}件"
-  %h4 このイベントで開催が多かった人
+  %h4 イベントを頻繁に開催している人
   %table.table.table-bordered.table-striped
     %colgroup
       %col
