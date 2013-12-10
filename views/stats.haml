@@ -1,0 +1,86 @@
+%form{:action => "search", :method => "get"}
+  .input-append
+    %input{:type => "text", :class => "span4", :name => "q", :value => "#{h params[:q]}"}
+    %button{:type => "submit", :class => "btn"} Search
+.span3
+  %h4 このイベントで参加が多かったチーム
+  %table.table.table-bordered.table-striped
+    %colgroup
+      %col
+      %col{:width => "80"}
+    %tbody
+      - @teams.each do |team|
+        %tr
+          %td
+            = h team[0]
+          %td
+            = "#{team[1]}件"
+  %h4 このイベントで開催が多かった人
+  %table.table.table-bordered.table-striped
+    %colgroup
+      %col
+      %col{:width => "80"}
+    %tbody
+      - @host_persons.each do |host_person|
+        %tr
+          %td
+            = h host_person[0]
+          %td
+            = "#{host_person[1]}件"
+.span8
+  %h4
+    検索
+    %small
+      = "#{@result_size} 件中 #{@current_page} ページ目"
+  %table.table.table-striped
+    %colgroup
+      %col
+      %col{:width => "80"}
+    %tbody
+      - @paged_events.each do |event|
+        %tr
+          %td
+            .event-summary
+              = summary_escape(event[:summary], @keyword)
+            .event-time
+              = event[:datetime].strftime("%Y-%m-%d %R")
+            .event-result
+              = description_escape(event[:result], @keyword)
+          %td
+            %form{:action => "good?q=#{uri_escape params[:q]}", :method => "post"}
+              %input{:type => "hidden", :name => "key", :value => event[:_key]}
+              %button{:type => "submit", :class => "btn btn-primary"}
+                = event[:good]
+  .pagination.pagination-small.pagination-centered
+    %ul
+      - if @current_page > 1
+        %li
+          %a{:href => "./search?#{uri_escape(query_params params)}&page=1"}
+            &laquo;最初
+        %li
+          %a{:href => "./search?#{uri_escape(query_params params)}&page=#{@current_page - 1}"}
+            &laquo;前
+      - else
+        %li
+          %a
+            &laquo;最初
+        %li
+          %a
+            &laquo;前
+      %li
+        %a
+          = "#{@current_page} / #{@last_page}"
+      - if @current_page < @last_page
+        %li
+          %a{:href => "./search?#{uri_escape(query_params params)}&page=#{@current_page + 1}"}
+            次&raquo;
+        %li
+          %a{:href => "./search?#{uri_escape(query_params params)}&page=#{@last_page}"}
+            最後&raquo;
+      - else
+        %li
+          %a
+            次&raquo;
+        %li
+          %a
+            最後&raquo;

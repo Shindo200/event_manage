@@ -43,7 +43,7 @@ class OperationManage < Sinatra::Base
     @last_page = ((@result_size - 1) / SHOW_EVENTS) + 1
     @paged_events = @events.paginate(records, {:page => @current_page})
 
-    erb :stats
+    haml :stats
   end
 
   get '/search' do
@@ -74,7 +74,7 @@ class OperationManage < Sinatra::Base
     # 検索にかかった時間を測りたい場合はコメントを外す
     #puts (Time.now - start).to_f
 
-    erb :stats
+    haml :stats
   end
 
   post '/good' do
