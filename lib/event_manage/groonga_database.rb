@@ -1,6 +1,7 @@
 # encoding:utf-8
 require "config/config"
 require "groonga"
+require "lib/event_manage/events"
 
 module EventManage
   class GroongaDatabase
@@ -52,29 +53,7 @@ module EventManage
     private
 
     def define_schema
-      Groonga::Schema.create_table("Events", type: :hash) do |table|
-        table.time    "datetime"
-        table.text    "title"
-        table.string  "uri"
-        table.string  "organizer"
-        table.string  "community"
-        table.text    "venue"
-        table.text    "summary"
-        table.text    "note"
-        table.integer "good"
-      end
-
-      Groonga::Schema.create_table("Terms",
-        :type               => :patricia_trie,
-        :key_normalize      => true,
-        :default_tokenizer  => "TokenBigram")
-
-      Groonga::Schema.change_table("Terms") do |table|
-        table.index("Events.title")
-        table.index("Events.venue")
-        table.index("Events.summary")
-        table.index("Events.note")
-      end
+      Events.define_schema
     end
   end
 end
