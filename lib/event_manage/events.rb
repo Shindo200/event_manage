@@ -7,15 +7,6 @@ module EventManage
     require 'pry'
 
     class << self
-      def initialize
-        @db_path = nil
-        @db = nil
-      end
-
-      def set_database(name)
-        @db_path = "#{DB_ROOT}/#{name}"
-      end
-
       def import_csv(path)
         csv = CSV.open(path, "r",
           external_encoding: "CP932",
@@ -112,77 +103,6 @@ module EventManage
 
       def scan_community(title)
         title.scan(/^(.*?(グループ))/).flatten.shift
-      end
-
-      def open_database
-        # このメソッドは引数が1つのブロックを受け取ることができる。
-        # その場合、ブロック引数には Groonga["Events"] オブジェクトが渡される。
-        # ブロックの処理を終えたときに、データベースを閉じる。
-
-        if @db_path.nil?
-          # TODO: データベースファイル名を指定していないときのエラー処理を実装する。
-          raise
-        end
-
-        if opened_database?
-          # TODO: 既にデータベースを開いているときのエラー処理を実装する。
-          return false
-        end
-
-        Groonga::Context.default_options = { encoding: :utf8 }
-        if File.exist?(@db_path)
-          @db = Groonga::Database.open(@db_path)
-        else
-          @db = Groonga::Database.create(:path => @db_path)
-          define_schema
-        end
-
-        if block_given?
-          # ブロック内の処理を実行し、終わったらデータベースを閉じる。
-          begin
-            yield(Groonga["Events"])
-          ensure
-            close_database
-          end
-        end
-      end
-
-      def define_schema
-        Groonga::Schema.create_table("Events", type: :hash) do |table|
-          table.time    "datetime"
-          table.text    "title"
-          table.string  "uri"
-          table.string  "organizer"
-          table.string  "community"
-          table.text    "venue"
-          table.text    "summary"
-          table.text    "note"
-          table.integer "good"
-        end
-
-        Groonga::Schema.create_table("Terms",
-          :type               => :patricia_trie,
-          :key_normalize      => true,
-          :default_tokenizer  => "TokenBigram")
-
-        Groonga::Schema.change_table("Terms") do |table|
-          table.index("Events.title")
-          table.index("Events.venue")
-          table.index("Events.summary")
-          table.index("Events.note")
-        end
-      end
-
-      def close_database
-        @db.close if opened_database?
-        Groonga::Context.default.close
-        Groonga::Context.default = nil
-        # メモリ使い過ぎでエラーが発生することがあるのでGCを実行しておく
-        # GC.start
-      end
-
-      def opened_database?
-        !!(@db)
       end
 
       def valid_community?(community)
