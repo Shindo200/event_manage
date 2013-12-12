@@ -16,11 +16,12 @@ module EventManage
     end
 
     before do
-      @events = Events.new('application.db')
+      Events.set_database('application.db')
     end
 
     get '/' do
-      load_csv(@events)
+      Event.import_csv(CSV_PATH) if File.exist?(CSV_PATH)
+      Dir::glob("#{CSV_PATH}*").each {|f| File.delete(f)}
 
       haml :index
     end
@@ -41,14 +42,15 @@ module EventManage
         flash[:notice] = "検索期間の入力が不正です。正しい日付を入力してください。"
         redirect '/'
       end
-      records = @events.search_word(@keyword, {:operator => :and, :start_time => start_time, :end_time => end_time})
-      @result_size = records.size
-      @communities = @events.get_top_community(records, 5)
-      @organizers = @events.get_top_organizer(records, 5)
+
+      @events = Events.search(@keyword, {:operator => :and, :start_time => start_time, :end_time => end_time})
+      @communities = @events.get_top_community(5)
+      @organizers = @events.get_top_organizer(5)
+
       @current_page = params[:page].to_i
       @current_page = 1 if @current_page <= 0
       @last_page = ((@result_size - 1) / SHOW_EVENTS) + 1
-      @paged_events = @events.paginate(records, {:page => @current_page})
+      @paged_events = @events.paginate(page: @current_page)
 
       # 検索にかかった時間を測りたい場合はコメントを外す
       #puts (Time.now - start).to_f
@@ -57,12 +59,8 @@ module EventManage
     end
 
     post '/good' do
-      @events.up_good_count(params[:key]) if params[:key]
-      redirect "/search?q=#{uri_escape params[:q]}"
-    end
-
-    after do
-      @events.close_db
+      #@events.up_good_count(params[:key]) if params[:key]
+      #redirect "/search?q=#{uri_escape params[:q]}"
     end
   end
 end
