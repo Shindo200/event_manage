@@ -1,10 +1,10 @@
 # encoding: utf-8
+require 'csv'
+require 'time'
+require 'groonga'
+
 module EventManage
   class Events
-    require 'csv'
-    require 'time'
-    require 'groonga'
-
     def self.define_schema
       Groonga::Schema.create_table("Events", type: :hash) do |table|
         table.time    "datetime"
@@ -31,36 +31,43 @@ module EventManage
       end
     end
 
+    def self.import_csv
+      csv = CSV.open(path, "r",
+        external_encoding: "CP932",
+        internal_encoding: "UTF-8",
+        headers: true
+      )
+
+      open_database do |events|
+        csv.each do |row|
+          # 開催グループ名が無効の場合は、概要に書かれている開催グループ名を取得する。
+          community = row["開催グループ"]
+          community = scan_community(row["イベント名"]) unless valid_community?(community)
+
+          attributes = {
+            datetime:   Time.parse(row["開催日時"]),
+            title:      row["イベント名"],
+            uri:        row["告知サイトURL"],
+            organizer:  row["開催者"],
+            community:  community,
+            venue:      row["開催地"],
+            summary:    row["概要"],
+            note:       row["備考"],
+            good:       0
+          }
+
+          # Events データベースに、key がイベントIDとなるデータを追加する。
+          events.add(row["イベントID"], attributes)
+        end
+      end
+    end
+
+    def initialize(events)
+      @events = events
+    end
+
     class << self
       def import_csv(path)
-        csv = CSV.open(path, "r",
-          external_encoding: "CP932",
-          internal_encoding: "UTF-8",
-          headers: true
-        )
-
-        open_database do |events|
-          csv.each do |row|
-            # 開催グループ名が無効の場合は、概要に書かれている開催グループ名を取得する。
-            community = row["開催グループ"]
-            community = scan_community(row["イベント名"]) unless valid_community?(community)
-
-            attributes = {
-              datetime:   Time.parse(row["開催日時"]),
-              title:      row["イベント名"],
-              uri:        row["告知サイトURL"],
-              organizer:  row["開催者"],
-              community:  community,
-              venue:      row["開催地"],
-              summary:    row["概要"],
-              note:       row["備考"],
-              good:       0
-            }
-
-            # Events データベースに、key がイベントIDとなるデータを追加する。
-            events.add(row["イベントID"], attributes)
-          end
-        end
       end
 
       def search(words, opts={})

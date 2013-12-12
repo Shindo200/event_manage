@@ -7,15 +7,16 @@ module EventManage
   class GroongaDatabase
     def initialize
       @database = nil
+      @events = nil
     end
 
     def open(file_name)
       # このメソッドは引数が1つのブロックを受け取ることができる
-      # ブロック引数には Groonga["Events"] オブジェクトが渡される
+      # ブロック引数には self が渡される
       # ブロックの処理を終えたときに、データベースを閉じる
 
       if opened?
-        # TODO: 既にデータベースを開いているときのエラー処理を実装する
+        # TODO: 既にデータベースを開いているときの処理を実装する
         return false
       end
 
@@ -29,12 +30,14 @@ module EventManage
         define_schema
       end
 
+      @events = nil
+
       if block_given?
         # ブロック内の処理を実行し、終わったらデータベースを閉じる
         begin
-          yield(Groonga["Events"])
+          yield self
         ensure
-          close
+          close if opened?
         end
       end
     end
@@ -48,6 +51,10 @@ module EventManage
 
     def opened?
       !!@database
+    end
+
+    def events
+      @events ||= Events.new(Groonga["Events"])
     end
 
     private
