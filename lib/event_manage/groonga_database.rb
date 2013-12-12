@@ -1,5 +1,6 @@
 # encoding:utf-8
 require "config/config"
+require "groonga"
 
 module EventManage
   class GroongaDatabase
@@ -32,12 +33,12 @@ module EventManage
         begin
           yield(Groonga["Events"])
         ensure
-          close_database
+          close
         end
       end
     end
 
-    def close_database
+    def close
       @database.close if opened?
       @database = nil
       Groonga::Context.default.close
