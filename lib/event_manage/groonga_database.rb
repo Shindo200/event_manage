@@ -15,11 +15,6 @@ module EventManage
       # ブロック引数には self が渡される
       # ブロックの処理を終えたときに、データベースを閉じる
 
-      if opened?
-        # TODO: 既にデータベースを開いているときの処理を実装する
-        return false
-      end
-
       file_path = "#{DB_ROOT}/#{file_name}"
 
       Groonga::Context.default_options = { encoding: :utf8 }

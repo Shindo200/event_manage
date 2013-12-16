@@ -88,12 +88,6 @@ module EventManage
         @groonga_database.open("test.db")
       end
 
-      describe "#open" do
-        it "False を返すこと" do
-          expect(@groonga_database.open("test.db")).to be_false
-        end
-      end
-
       describe "#opened?" do
         it "True を返すこと" do
           expect(@groonga_database.opened?).to be_true
