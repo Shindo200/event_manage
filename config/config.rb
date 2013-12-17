@@ -7,7 +7,7 @@ APP_ROOT = File.expand_path("../../",__FILE__)
 DB_ROOT = "#{APP_ROOT}/db"
 
 # データベースファイル名
-DB_FILE_NAME = ""
+DB_FILE_NAME = "application.db"
 
 # CSV の保存先
 CSV_PATH = "#{APP_ROOT}/tmp/retrieve.csv"
