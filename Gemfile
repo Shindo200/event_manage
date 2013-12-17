@@ -9,4 +9,5 @@ group 'test' do
   gem 'rspec'
   gem 'guard'
   gem 'guard-shell'
+  gem 'guard-rspec'
 end
