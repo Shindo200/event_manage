@@ -2,6 +2,7 @@
 require 'csv'
 require 'time'
 require 'groonga'
+require 'lib/event_manage/groonga_database'
 
 module EventManage
   class Events
@@ -31,145 +32,185 @@ module EventManage
       end
     end
 
-    def self.import_csv
+    def initialize(events)
+      @events = events
+    end
+
+    def size
+      @events.size
+    end
+
+    def key(event_key)
+      @events[event_key]
+    end
+
+    def each
+      @events.select.each { |event| yield event }
+    end
+
+    def all
+      @events.select
+    end
+
+    def delete(key)
+      @events.delete(key)
+    end
+
+    def truncate
+      @events.truncate
+    end
+
+    # 指定した CSV ファイルの内容を DB に追加する
+    def import_csv(path)
       csv = CSV.open(path, "r",
         external_encoding: "CP932",
         internal_encoding: "UTF-8",
         headers: true
       )
 
-      open_database do |events|
-        csv.each do |row|
-          # 開催グループ名が無効の場合は、概要に書かれている開催グループ名を取得する。
-          community = row["開催グループ"]
-          community = scan_community(row["イベント名"]) unless valid_community?(community)
+      csv.each do |row|
+        # 開催グループ名が無効の場合は、概要に書かれている開催グループ名を取得する。
+        community = row["開催グループ"]
+        community = scan_community(row["イベント名"]) unless valid_community?(community)
 
-          attributes = {
-            datetime:   Time.parse(row["開催日時"]),
-            title:      row["イベント名"],
-            uri:        row["告知サイトURL"],
-            organizer:  row["開催者"],
-            community:  community,
-            venue:      row["開催地"],
-            summary:    row["概要"],
-            note:       row["備考"],
-            good:       0
-          }
+        attributes = {
+          datetime:   Time.parse(row["開催日時"]),
+          title:      row["イベント名"],
+          uri:        row["告知サイトURL"],
+          organizer:  row["開催者"],
+          community:  community,
+          venue:      row["開催地区"],
+          summary:    row["概要"],
+          note:       row["備考"],
+          good:       0
+        }
 
-          # Events データベースに、key がイベントIDとなるデータを追加する。
-          events.add(row["イベントID"], attributes)
-        end
+        # Events データベースに、key がイベントIDとなるデータを追加する。
+        @events.add(row["イベントID"], attributes)
       end
     end
 
-    def initialize(events)
-      @events = events
-    end
+    def search(words, opts = {})
+      opts[:operator] ||= :or
 
-    class << self
-      def import_csv(path)
-      end
+      result = @events.select do |event|
+        expression = nil
 
-      def search(words, opts={})
-        opts[:operator] ||= :or
-        result_events = nil
-
-        open_database do |events|
-          # 検索期間を指定した場合は、その検索期間で絞り込む
-          events = select_period(events, opts[:star_time], opts[:end_time]) if opts[:start_time] || opts[:end_time]
-
-          result_events = select_word(events, words, opts)
-        end
-
-        binding.pry
-        Events.new(result_events)
-      end
-
-      private
-
-      def select_period(events, start_time = Time.parse("2000-01-01"), end_time = Time.now)
-        begin
-          result_events = events.select do |record|
-            (record.datetime >= start_time) &
-            (record.datetime < end_time)
+        # 開始年月日を指定した場合、その年月日で Event を絞り込む
+        if opts[:start_time]
+          sub_expression = event.datetime >= Time.parse(opts[:start_time])
+          if expression.nil?
+            expression = sub_expression
+          else
+            expression &= sub_expression
           end
-          result_events
-        rescue
-          # TODO: log 出力処理
-          []
         end
-      end
 
-      def select_word(events, words, opts={})
-        opts[:operator] ||= :or
-
-        begin
-          result_events = events.select do |record|
-            case opts[:operator]
-              when :or
-                words.inject(record) do |tmp_record, word|
-                  tmp_record |
-                  target_column(record, word)
-                end
-              when :and
-                words.map {|word| target_column(record, word)}
-              else
-                raise
-            end
+        # 終了年月日を指定した場合、その年月日で Event を絞り込む
+        if opts[:end_time]
+          # 終了年月日で指定した日にちの 23:59:59 まで取得したいので、
+          # (イベント開始日時 < 終了年月日の翌日) を検索条件とする
+          end_time = Time.parse(opts[:end_time]) + 60 * 60 * 24
+          sub_expression = event.datetime < end_time
+          if expression.nil?
+            expression = sub_expression
+          else
+            expression &= sub_expression
           end
-          result_events
-        rescue
-          # TODO: log追記処理を入れる
-          []
         end
+
+        # 指定した単語で Event を絞り込む
+        sub = word_expression(event, words, opts[:operator])
+        if expression.nil?
+          expression = sub
+        else
+          expression &= sub
+        end
+
+        expression
       end
 
-      def target_column(record, word)
-        # 検索対象となるカラム。
-        # Groonga 特有の式で解釈されるので、| で式を繋ぐこと。
-        (record.title =~ word) |
-        (record.venue =~ word) |
-        (record.summary =~ word) |
-        (record.note =~ word)
-      end
-
-      def scan_community(title)
-        title.scan(/^(.*?(グループ))/).flatten.shift
-      end
-
-      def valid_community?(community)
-        return false if community.nil?
-        return false if community == 'Null'
-        true
-      end
+      Events.new(result)
     end
 
-    def initlaize(events)
-      @events = events
+    def up_good_count(key)
+      @events[key][:good] += 1
     end
 
-    def get_top_community(limit)
+    def down_good_count(key)
+      @events[key][:good] -= 1
+    end
+
+    def get_top_community(limit = nil)
       hash_dep = {}
       @events.group("community").each do |event|
         community = event.key
         hash_dep[community] = event.n_sub_records
       end
-      # 開催グループ名が空の場合の項目があるので削除
+      # 開催グループ名が空のイベントを結果を取り除く
       hash_dep.delete(nil)
-      communities = hash_dep.sort_by {|k,v| v}
-      communities = communities.reverse.slice(0...limit)
+
+      # 開催数が多い順でソートする
+      communities = hash_dep.sort_by {|_k,v| v}.reverse
+
+      communities.slice!(limit..-1) unless limit.nil?
+
       communities
     end
 
-    def get_top_organizer(limit)
+    def get_top_organizer(limit = nil)
       hash_sup = {}
       @events.group("organizer").each do |event|
         organizer = event.key
         hash_sup[organizer] = event.n_sub_records
       end
-      organizers = hash_sup.sort_by {|k,v| v}
-      organizers = organizers.reverse.slice(0...limit)
+      # 開催数が多い順でソートする
+      organizers = hash_sup.sort_by {|_k,v| v}.reverse
+
+      organizers.slice!(limit..-1) unless limit.nil?
+
       organizers
+    end
+
+    private
+
+    def scan_community(title)
+      title.scan(/^(.*?(グループ))/).flatten.shift
+    end
+
+    def valid_community?(community)
+      return false if community.nil?
+      return false if community == 'Null'
+      true
+    end
+
+    def word_expression(event, words, operator)
+      sub = nil
+
+      words.each do |word|
+        e = target_column(event, word)
+        if sub.nil?
+          sub = e
+        else
+          case operator
+            when :or
+              sub |= e
+            when :and
+              sub &= e
+          end
+        end
+      end
+
+      sub
+    end
+
+    def target_column(event, word)
+      # 検索対象となるカラム
+      # Groonga 特有の式で解釈されるので、| で式を繋ぐこと
+      (event.title   =~ word) |
+      (event.venue   =~ word) |
+      (event.summary =~ word) |
+      (event.note    =~ word)
     end
 
     def paginate(opts = {})
@@ -183,38 +224,6 @@ module EventManage
       )
 
       Events.new(events)
-    end
-
-    def up_good_count(key)
-      @events[key][:good] += 1
-    end
-
-    def down_good_count(key)
-      @events[key][:good] -= 1
-    end
-
-    def get_all_records
-      @events
-    end
-
-    def [](key)
-      @events[key]
-    end
-
-    def size
-      @events.size
-    end
-
-    def each
-      @events.each { |event| yield(event) }
-    end
-
-    def delete(key)
-      @events.delete(key)
-    end
-
-    def truncate
-      @events.truncate
     end
   end
 end

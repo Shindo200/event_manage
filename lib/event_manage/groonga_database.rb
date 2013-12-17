@@ -1,7 +1,8 @@
 # encoding:utf-8
-require "config/config"
-require "groonga"
-require "lib/event_manage/events"
+require 'config/config'
+require 'groonga'
+require 'csv'
+require 'lib/event_manage/events'
 
 module EventManage
   class GroongaDatabase

@@ -2,6 +2,7 @@
 $LOAD_PATH.unshift File.expand_path('../../',__FILE__)
 require 'rspec'
 require 'config/config'
+
 TEST_CSV_1_PATH = "#{APP_ROOT}/spec/tmp/20121010.csv"
 TEST_CSV_2_PATH = "#{APP_ROOT}/spec/tmp/20121020.csv"
 TEST_CSV_3_PATH = "#{APP_ROOT}/spec/tmp/20121030.csv"
