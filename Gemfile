@@ -8,4 +8,5 @@ gem 'haml'
 group 'test' do
   gem 'rspec'
   gem 'guard'
+  gem 'guard-shell'
 end
