@@ -5,7 +5,7 @@ gem 'rack-flash3'
 gem 'mechanize'
 gem 'haml'
 
-group 'test' do
+group :development, :test do
   gem 'rspec'
   gem 'guard-rspec'
 end
