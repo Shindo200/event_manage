@@ -16,12 +16,16 @@ module EventManage
     end
 
     before do
-      Events.set_database('application.db')
+      @database = GroongaDatabase.new
     end
 
     get '/' do
-      Event.import_csv(CSV_PATH) if File.exist?(CSV_PATH)
-      Dir::glob("#{CSV_PATH}*").each {|f| File.delete(f)}
+      @database.open(DB_FILE_NAME)
+
+      if File.exist?(CSV_PATH)
+        @database.events.import_csv(CSV_PATH)
+        Dir::glob("#{CSV_PATH}*").each {|f| File.delete(f)}
+      end
 
       haml :index
     end
