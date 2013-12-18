@@ -175,6 +175,19 @@ module EventManage
       organizers
     end
 
+    def paginate(opts = {})
+      opts[:page] ||= 1
+
+      events = @events.paginate([
+        {:key => "good",     :order => :desc},
+        {:key => "datetime", :order => :desc}],
+        :page => opts[:page],
+        :size => SHOW_EVENTS
+      )
+
+      Events.new(events)
+    end
+
     private
 
     def scan_community(title)
@@ -214,19 +227,6 @@ module EventManage
       (event.venue   =~ word) |
       (event.summary =~ word) |
       (event.note    =~ word)
-    end
-
-    def paginate(opts = {})
-      opts[:page] ||= 1
-
-      events = @events.paginate([
-        {:key => "good",     :order => :desc},
-        {:key => "datetime", :order => :desc}],
-        :page => opts[:page],
-        :size => SHOW_EVENTS
-      )
-
-      Events.new(events)
     end
   end
 end
