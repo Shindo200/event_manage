@@ -90,13 +90,13 @@ module EventManage
 
         it "チーム名が空のレコードは、見出しからチーム名に相当するものを探して、インポートすること" do
           @events.import_csv(TEST_CSV_2_PATH)
-          event = @events.key("2012010127")
+          event = @events.key("E07")
           expect(event.community).to eq "Aグループ"
         end
 
         it "チーム名が'Null'のレコードは、概要からチーム名に相当するものを探して、インポートすること" do
           @events.import_csv(TEST_CSV_2_PATH)
-          event = @events.key("2012010129")
+          event = @events.key("E09")
           expect(event.community).to eq "Aグループ"
         end
       end
@@ -163,13 +163,13 @@ module EventManage
         it "キーワードを全て含むイベントだけを返すこと" do
           @events.import_csv(TEST_CSV_2_PATH)
           records = @events.search(["ゲートボール","ドミノ"], operator: :and).all.map {|r| r[:_key]}
-          expect(records).to eq ["2012010121"]
+          expect(records).to eq ["E01"]
         end
 
         it "キーワードに何も渡さなかった場合は、全てのイベントを返すこと" do
           @events.import_csv(TEST_CSV_2_PATH)
           records = @events.search([]).all.map {|r| r[:_key]}
-          expect(records).to eq ["2012010120", "2012010121", "2012010122", "2012010123", "2012010124", "2012010125", "2012010126", "2012010127", "2012010128", "2012010129"]
+          expect(records).to eq ["E00", "E01", "E02", "E03", "E04", "E05", "E06", "E07", "E08", "E09"]
         end
       end
 
@@ -178,7 +178,7 @@ module EventManage
           @events.import_csv(TEST_CSV_2_PATH)
           start_time = "2012/01/01"
           records = @events.search(["大会"], start_time: start_time).all.map {|r| r[:_key]}
-          expect(records).to eq ["2012010120", "2012010121", "2012010122", "2012010123", "2012010124", "2012010125"]
+          expect(records).to eq ["E00", "E01", "E02", "E03", "E04", "E05"]
         end
       end
 
@@ -187,7 +187,7 @@ module EventManage
           @events.import_csv(TEST_CSV_2_PATH)
           end_time = "2012/01/31"
           records = @events.search(["大会"], end_time: end_time).all.map {|r| r[:_key]}
-          expect(records).to eq ["2012010120", "2012010121", "2012010122", "2012010123", "2012010124", "2012010126"]
+          expect(records).to eq ["E00", "E01", "E02", "E03", "E04", "E06"]
         end
       end
 
@@ -197,7 +197,7 @@ module EventManage
           start_time = "2012/01/01"
           end_time = "2012/01/31"
           records = @events.search(["大会"], start_time: start_time, end_time: end_time).all.map {|r| r[:_key]}
-          expect(records).to eq ["2012010120", "2012010121", "2012010122", "2012010123", "2012010124"]
+          expect(records).to eq ["E00", "E01", "E02", "E03", "E04"]
         end
       end
     end
@@ -229,37 +229,37 @@ module EventManage
     describe "#up_good_count" do
       it "good が 0 から 1 に増えること" do
         @events.import_csv(TEST_CSV_2_PATH)
-        expect(@events.key("2012010120").good).to eq 0
-        @events.up_good_count("2012010120")
-        expect(@events.key("2012010120").good).to eq 1
+        expect(@events.key("E00").good).to eq 0
+        @events.up_good_count("E00")
+        expect(@events.key("E00").good).to eq 1
       end
 
       it "2回実行すると good が 0 から 2 に増えること" do
         @events.import_csv(TEST_CSV_2_PATH)
-        expect(@events.key("2012010120").good).to eq 0
-        @events.up_good_count("2012010120")
-        @events.up_good_count("2012010120")
-        expect(@events.key("2012010120").good).to eq 2
+        expect(@events.key("E00").good).to eq 0
+        @events.up_good_count("E00")
+        @events.up_good_count("E00")
+        expect(@events.key("E00").good).to eq 2
       end
     end
 
     describe "#down_good_count" do
       it "good が 1 から 0 に減ること" do
         @events.import_csv(TEST_CSV_2_PATH)
-        @events.up_good_count("2012010120")
-        expect(@events.key("2012010120").good).to eq 1
-        @events.down_good_count("2012010120")
-        expect(@events.key("2012010120").good).to eq 0
+        @events.up_good_count("E00")
+        expect(@events.key("E00").good).to eq 1
+        @events.down_good_count("E00")
+        expect(@events.key("E00").good).to eq 0
       end
 
       it "2回実行すると good が 2 から 0 に減ること" do
         @events.import_csv(TEST_CSV_2_PATH)
-        @events.up_good_count("2012010120")
-        @events.up_good_count("2012010120")
-        expect(@events.key("2012010120").good).to eq 2
-        @events.down_good_count("2012010120")
-        @events.down_good_count("2012010120")
-        expect(@events.key("2012010120").good).to eq 0
+        @events.up_good_count("E00")
+        @events.up_good_count("E00")
+        expect(@events.key("E00").good).to eq 2
+        @events.down_good_count("E00")
+        @events.down_good_count("E00")
+        expect(@events.key("E00").good).to eq 0
       end
     end
 
