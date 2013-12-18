@@ -77,7 +77,7 @@ module EventManage
 
         it "カラムの順番が違うCSVを正しくインポートできること" do
           @events.import_csv(TEST_CSV_3_PATH)
-          event = @events.key("2012010100")
+          event = @events.key("00000000")
           expect(event.datetime).to eq  Time.parse("2012/01/01 00:00:00")
           expect(event.title).to eq     "イベントテスト"
           expect(event.uri).to eq       "http://www.example.com/"
