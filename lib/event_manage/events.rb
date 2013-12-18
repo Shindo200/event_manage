@@ -6,6 +6,8 @@ require 'lib/event_manage/groonga_database'
 
 module EventManage
   class Events
+    attr_reader :current_page
+
     def self.define_schema
       Groonga::Schema.create_table("Events", type: :hash) do |table|
         table.time    "datetime"
@@ -32,8 +34,9 @@ module EventManage
       end
     end
 
-    def initialize(events)
+    def initialize(events, current_page = nil)
       @events = events
+      @current_page = current_page
     end
 
     def size
@@ -50,6 +53,19 @@ module EventManage
 
     def all
       @events.select
+    end
+
+    def last_page
+      # 最終ページ数
+      ((@events.size - 1) / SHOW_EVENTS) + 1
+    end
+
+    def first_page?
+      @current_page == 1
+    end
+
+    def last_page?
+      @current_page == last_page
     end
 
     def delete(key)
@@ -133,7 +149,7 @@ module EventManage
         expression
       end
 
-      Events.new(result)
+      Events.new(result, @current_page)
     end
 
     def up_good_count(key)
@@ -175,17 +191,21 @@ module EventManage
       organizers
     end
 
-    def paginate(opts = {})
-      opts[:page] ||= 1
+    def paginate(page = 1)
+      # ページ数が 1 未満の場合は、self を返す
+      return self if page < 1
+
+      # 最終ページ数より大きいページ数の場合は、最終ページ数でページングする
+      page = last_page if page > last_page
 
       events = @events.paginate([
         {:key => "good",     :order => :desc},
         {:key => "datetime", :order => :desc}],
-        :page => opts[:page],
+        :page => page,
         :size => SHOW_EVENTS
       )
 
-      Events.new(events)
+      Events.new(events, page)
     end
 
     private
