@@ -151,6 +151,12 @@ module EventManage
           records = @events.search(["Nothing"]).all.map {|r| r[:_key]}
           expect(records).to eq []
         end
+
+        it "キーワードに何も渡さなかった場合は、全てのイベントを返すこと" do
+          @events.import_csv(TEST_CSV_1_PATH)
+          records = @events.search([]).all.map {|r| r[:_key]}
+          expect(records).to eq ["2012010100"]
+        end
       end
 
       context "オプションで AND 検索を指定した場合" do
@@ -158,6 +164,12 @@ module EventManage
           @events.import_csv(TEST_CSV_2_PATH)
           records = @events.search(["ゲートボール","ドミノ"], operator: :and).all.map {|r| r[:_key]}
           expect(records).to eq ["2012010121"]
+        end
+
+        it "キーワードに何も渡さなかった場合は、全てのイベントを返すこと" do
+          @events.import_csv(TEST_CSV_2_PATH)
+          records = @events.search([]).all.map {|r| r[:_key]}
+          expect(records).to eq ["2012010120", "2012010121", "2012010122", "2012010123", "2012010124", "2012010125", "2012010126", "2012010127", "2012010128", "2012010129"]
         end
       end
 
