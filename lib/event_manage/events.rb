@@ -127,6 +127,9 @@ module EventManage
           expression &= sub
         end
 
+        # 何も条件を指定しなかったとき、全ての Event を取り出す
+        expression = event if expression.nil?
+
         expression
       end
 
