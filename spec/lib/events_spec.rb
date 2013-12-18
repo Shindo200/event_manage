@@ -171,6 +171,12 @@ module EventManage
           records = @events.search([]).all.map {|r| r[:_key]}
           expect(records).to eq ["E00", "E01", "E02", "E03", "E04", "E05", "E06", "E07", "E08", "E09"]
         end
+
+        it "キーワードを何も渡さない場合は、全てのイベントを返すこと" do
+          @events.import_csv(TEST_CSV_2_PATH)
+          records = @events.search([]).all.map {|r| r[:_key]}
+          expect(records).to eq ["2012010120", "2012010121", "2012010122", "2012010123", "2012010124", "2012010125", "2012010126", "2012010127", "2012010128", "2012010129"]
+        end
       end
 
       context "オプションで検索範囲（開始日〜）を指定した場合" do

@@ -22,10 +22,10 @@ module EventManage
     get '/' do
       if File.exist?(CSV_PATH)
         @database.open(DB_FILE_NAME) do |db|
-+         db.events.import_csv(CSV_PATH)
-+         Dir::glob("#{CSV_PATH}*").each {|f| File.delete(f)}
+          db.events.import_csv(CSV_PATH)
+          Dir::glob("#{CSV_PATH}*").each {|f| File.delete(f)}
         end
-+     end
+      end
 
       haml :index
     end
@@ -38,22 +38,23 @@ module EventManage
 
       @keywords = params[:q].gsub(/　/, ' ').split
       begin
-        start_time = Time.parse(params[:start_time]) unless params[:start_time].blank?
-        # 終了期間+1日までの範囲を検索
-        end_time = Time.parse(params[:end_time]) + (60 * 60 * 24) unless params[:end_time].blank?
+        # TODO: ***_time が有効な文字列がチェックする処理を入れる
+        start_time = params[:start_time] unless params[:start_time].blank?
+        end_time = params[:end_time] unless params[:end_time].blank?
       rescue
-        # Time.parseに失敗した場合
         flash[:notice] = "検索期間の入力が不正です。正しい日付を入力してください。"
         redirect '/'
       end
 
-      @events = Events.search(@keywords, {:operator => :and, :start_time => start_time, :end_time => end_time})
+      @database.open(DB_FILE_NAME)
+
+      @events = @database.events.search(@keywords, operator: :and, start_time: start_time, end_time: end_time)
       @top_communities = @events.get_top_community(5)
       @top_organizers = @events.get_top_organizer(5)
 
       @current_page = params[:page].to_i
       @current_page = 1 if @current_page <= 0
-      @last_page = ((@result_size - 1) / SHOW_EVENTS) + 1
+      @last_page = ((@events.size - 1) / SHOW_EVENTS) + 1
       @paged_events = @events.paginate(page: @current_page)
 
       # 検索にかかった時間を測りたい場合はコメントを外す
@@ -65,6 +66,10 @@ module EventManage
     post '/good' do
       #@events.up_good_count(params[:key]) if params[:key]
       #redirect "/search?q=#{uri_escape params[:q]}"
+    end
+
+    after do
+      @database.close
     end
   end
 end

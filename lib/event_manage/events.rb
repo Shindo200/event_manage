@@ -3,6 +3,7 @@ require 'csv'
 require 'time'
 require 'groonga'
 require 'lib/event_manage/groonga_database'
+require 'pry'
 
 module EventManage
   class Events
@@ -150,6 +151,19 @@ module EventManage
       end
 
       Events.new(result, @current_page)
+    end
+
+    def paginate(opts = {})
+      opts[:page] ||= 1
+
+      events = @events.paginate([
+        {:key => "good",     :order => :desc},
+        {:key => "datetime", :order => :desc}],
+        :page => opts[:page],
+        :size => SHOW_EVENTS
+      )
+
+      Events.new(events)
     end
 
     def up_good_count(key)
