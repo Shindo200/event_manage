@@ -64,7 +64,7 @@ module EventManage
 
         it "CSV の全ての内容がDBに保存されること" do
           @events.import_csv(TEST_CSV_1_PATH)
-          event = @events.key("2012010100")
+          event = @events.key("00000000")
           expect(event.datetime).to eq  Time.parse("2012/01/01 00:00:00")
           expect(event.title).to eq     "イベントテスト"
           expect(event.uri).to eq       "http://www.example.com/"
@@ -125,25 +125,25 @@ module EventManage
         it "title カラムを全文検索し、マッチしたイベントを返すこと" do
           @events.import_csv(TEST_CSV_1_PATH)
           records = @events.search(["イベント"]).all.map {|r| r[:_key]}
-          expect(records).to eq ["2012010100"]
+          expect(records).to eq ["00000000"]
         end
 
         it "venue カラムを全文検索し、マッチしたイベントを返すこと" do
           @events.import_csv(TEST_CSV_1_PATH)
           records = @events.search(["地区"]).all.map {|r| r[:_key]}
-          expect(records).to eq ["2012010100"]
+          expect(records).to eq ["00000000"]
         end
 
         it "summary カラムを全文検索し、マッチしたイベントを返すこと" do
           @events.import_csv(TEST_CSV_1_PATH)
           records = @events.search(["概要"]).all.map {|r| r[:_key]}
-          expect(records).to eq ["2012010100"]
+          expect(records).to eq ["00000000"]
         end
 
         it "note カラムを全文検索し、マッチしたイベントを返すこと" do
           @events.import_csv(TEST_CSV_1_PATH)
           records = @events.search(["備考"]).all.map {|r| r[:_key]}
-          expect(records).to eq ["2012010100"]
+          expect(records).to eq ["00000000"]
         end
 
         it "マッチしなかった場合は、空の配列を返すこと" do
@@ -155,7 +155,7 @@ module EventManage
         it "キーワードに何も渡さなかった場合は、全てのイベントを返すこと" do
           @events.import_csv(TEST_CSV_1_PATH)
           records = @events.search([]).all.map {|r| r[:_key]}
-          expect(records).to eq ["2012010100"]
+          expect(records).to eq ["00000000"]
         end
       end
 
