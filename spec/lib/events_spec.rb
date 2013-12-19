@@ -55,14 +55,14 @@ module EventManage
     end
 
     describe "#import_csv" do
-      context "CSV を1回インポートしたとき" do
-        it "レコードを1つ追加すること" do
+      context "イベントを1回インポートしたとき" do
+        it "全イベント件数が 1 になること" do
           expect(@events.size).to eq 0
           @events.import_csv(TEST_EVENT_CSV_PATH)
           expect(@events.size).to eq 1
         end
 
-        it "CSV の全ての内容がDBに保存されること" do
+        it "イベントの全ての情報が DB に保存されること" do
           @events.import_csv(TEST_EVENT_CSV_PATH)
           event = @events.key("00000000")
           expect(event.datetime).to eq  Time.parse("2012/01/01 00:00:00")
@@ -75,7 +75,7 @@ module EventManage
           expect(event.note).to eq      "備考テスト"
         end
 
-        it "カラムの順番が違うCSVを正しくインポートできること" do
+        it "カラムの順番が違うイベントを正しくインポートできること" do
           @events.import_csv(CHANGED_ORDER_CSV_PATH)
           event = @events.key("00000000")
           expect(event.datetime).to eq  Time.parse("2012/01/01 00:00:00")
@@ -88,21 +88,21 @@ module EventManage
           expect(event.note).to eq      "備考テスト"
         end
 
-        it "チーム名が空のレコードは、見出しからチーム名に相当するものを探して、インポートすること" do
+        it "グループ名が空のイベントは、イベント名からグループ名に相当するものを探して、インポートすること" do
           @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-          event = @events.key("E07")
+          event = @events.key("E10")
           expect(event.community).to eq "Aグループ"
         end
 
-        it "チーム名が'Null'のレコードは、概要からチーム名に相当するものを探して、インポートすること" do
+        it "グループ名が'Null'のイベントは、イベント名からグループ名に相当するものを探して、インポートすること" do
           @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-          event = @events.key("E09")
+          event = @events.key("E20")
           expect(event.community).to eq "Aグループ"
         end
       end
 
-      context "内容が同じ CSV を2回インポートしたとき" do
-        it "重複がないようにレコードを追加すること" do
+      context "同じイベントを2回インポートしたとき" do
+        it "全イベント件数が 1 になること" do
           expect(@events.size).to eq 0
           @events.import_csv(TEST_EVENT_CSV_PATH)
           @events.import_csv(TEST_EVENT_CSV_PATH)
@@ -110,12 +110,12 @@ module EventManage
         end
       end
 
-      context "内容が違う CSV をそれぞれ1回ずつインポートしたとき" do
-        it "レコードを2つ追加すること" do
+      context "イベントIDが違うイベントをそれぞれ1回ずつインポートしたとき" do
+        it "全イベント件数が 2 になること" do
           expect(@events.size).to eq 0
           @events.import_csv(TEST_EVENT_CSV_PATH)
-          @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-          expect(@events.size).to eq 11
+          @events.import_csv(TEST_OTHER_EVENT_CSV_PATH)
+          expect(@events.size).to eq 2
         end
       end
     end
@@ -162,14 +162,23 @@ module EventManage
       context "オプションで AND 検索を指定した場合" do
         it "キーワードを全て含むイベントだけを返すこと" do
           @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-          records = @events.search(["ゲートボール","ドミノ"], operator: :and).all.map {|r| r[:_key]}
-          expect(records).to eq ["E01"]
+          records = @events.search(["球技","将棋", "料理"], operator: :and).all.map {|r| r[:_key]}
+          expect(records).to eq ["E10", "E20", "E30", "E40", "E50", "E60", "E70"]
         end
 
         it "キーワードに何も渡さなかった場合は、全てのイベントを返すこと" do
           @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-          records = @events.search([]).all.map {|r| r[:_key]}
-          expect(records).to eq ["E00", "E01", "E02", "E03", "E04", "E05", "E06", "E07", "E08", "E09"]
+          result_records = @events.search([]).all.map {|r| r[:_key]}
+          all_records = [
+            "E01", "E02", "E03", "E04", "E05", "E06", "E07", "E08", "E09", "E10",
+            "E11", "E12", "E13", "E14", "E15", "E16", "E17", "E18", "E19", "E20",
+            "E21", "E22", "E23", "E24", "E25", "E26", "E27", "E28", "E29", "E30",
+            "E31", "E32", "E33", "E34", "E35", "E36", "E37", "E38", "E39", "E40",
+            "E41", "E42", "E43", "E44", "E45", "E46", "E47", "E48", "E49", "E50",
+            "E51", "E52", "E53", "E54", "E55", "E56", "E57", "E58", "E59", "E60",
+            "E61", "E62", "E63", "E64", "E65", "E66", "E67", "E68", "E69", "E70"
+          ]
+          expect(result_records).to eq all_records
         end
       end
 
@@ -177,8 +186,16 @@ module EventManage
         it "検索範囲内に開催したイベントだけを返すこと" do
           @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
           start_time = "2012/01/01"
-          records = @events.search(["大会"], start_time: start_time).all.map {|r| r[:_key]}
-          expect(records).to eq ["E00", "E01", "E02", "E03", "E04", "E05"]
+          result_records = @events.search(["大会"], start_time: start_time).all.map {|r| r[:_key]}
+          filtered_records = [
+            "E11", "E12", "E13", "E14", "E15", "E16", "E17", "E18", "E19", "E20",
+            "E21", "E22", "E23", "E24", "E25", "E26", "E27", "E28", "E29", "E30",
+            "E31", "E32", "E33", "E34", "E35", "E36", "E37", "E38", "E39", "E40",
+            "E41", "E42", "E43", "E44", "E45", "E46", "E47", "E48", "E49", "E50",
+            "E51", "E52", "E53", "E54", "E55", "E56", "E57", "E58", "E59", "E60",
+            "E61", "E62", "E63", "E64", "E65", "E66", "E67", "E68", "E69", "E70"]
+          
+          expect(result_records).to eq filtered_records
         end
       end
 
@@ -186,8 +203,16 @@ module EventManage
         it "検索範囲内に開催したイベントだけを返すこと" do
           @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
           end_time = "2012/01/31"
-          records = @events.search(["大会"], end_time: end_time).all.map {|r| r[:_key]}
-          expect(records).to eq ["E00", "E01", "E02", "E03", "E04", "E06"]
+          result_records = @events.search(["大会"], end_time: end_time).all.map {|r| r[:_key]}
+          filtered_records = [
+            "E01", "E02", "E03", "E04", "E05", "E06", "E07", "E08", "E09", "E10",
+            "E11", "E12", "E13", "E14", "E15", "E16", "E17", "E18", "E19", "E20",
+            "E21", "E22", "E23", "E24", "E25", "E26", "E27", "E28", "E29", "E30",
+            "E31", "E32", "E33", "E34", "E35", "E36", "E37", "E38", "E39", "E40",
+            "E41", "E42", "E43", "E44", "E45", "E46", "E47", "E48", "E49", "E50",
+            "E51", "E52", "E53", "E54", "E55", "E56", "E57", "E58", "E59", "E60"
+          ]
+          expect(result_records).to eq filtered_records
         end
       end
 
@@ -196,8 +221,15 @@ module EventManage
           @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
           start_time = "2012/01/01"
           end_time = "2012/01/31"
-          records = @events.search(["大会"], start_time: start_time, end_time: end_time).all.map {|r| r[:_key]}
-          expect(records).to eq ["E00", "E01", "E02", "E03", "E04"]
+          result_records = @events.search(["大会"], start_time: start_time, end_time: end_time).all.map {|r| r[:_key]}
+          filtered_records = [
+            "E11", "E12", "E13", "E14", "E15", "E16", "E17", "E18", "E19", "E20",
+            "E21", "E22", "E23", "E24", "E25", "E26", "E27", "E28", "E29", "E30",
+            "E31", "E32", "E33", "E34", "E35", "E36", "E37", "E38", "E39", "E40",
+            "E41", "E42", "E43", "E44", "E45", "E46", "E47", "E48", "E49", "E50",
+            "E51", "E52", "E53", "E54", "E55", "E56", "E57", "E58", "E59", "E60"
+          ]
+          expect(result_records).to eq filtered_records
         end
       end
     end
@@ -205,61 +237,61 @@ module EventManage
     describe "#get_top_community" do
       it "グループをイベント開催数が多い順に返すこと" do
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-        expect(@events.get_top_community).to eq [["Aグループ", 5], ["Bグループ", 2], ["Cグループ", 1], ["Dグループ", 1]]
+        expect(@events.get_top_community).to eq [["Aグループ", 28], ["Bグループ", 21]]
       end
 
       it "返されるグループの数を指定することができること" do
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-        expect(@events.get_top_community(1)).to eq [["Aグループ", 5]]
+        expect(@events.get_top_community(1)).to eq [["Aグループ", 28]]
       end
     end
 
     describe "#get_top_supporter" do
       it "開催者をイベント開催数が多い順に返すこと" do
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-        expect(@events.get_top_organizer).to eq [["Pat", 7], ["Emi", 2], ["Andy", 1]]
+        expect(@events.get_top_organizer).to eq [["User_1", 42], ["User_2", 21], ["User_3", 7]]
       end
 
       it "返される開催者の数を絞ることができること" do
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-        expect(@events.get_top_organizer(1)).to eq [["Pat", 7]]
+        expect(@events.get_top_organizer(1)).to eq [["User_1", 42]]
       end
     end
 
     describe "#up_good_count" do
       it "good が 0 から 1 に増えること" do
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-        expect(@events.key("E00").good).to eq 0
-        @events.up_good_count("E00")
-        expect(@events.key("E00").good).to eq 1
+        expect(@events.key("E01").good).to eq 0
+        @events.up_good_count("E01")
+        expect(@events.key("E01").good).to eq 1
       end
 
       it "2回実行すると good が 0 から 2 に増えること" do
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-        expect(@events.key("E00").good).to eq 0
-        @events.up_good_count("E00")
-        @events.up_good_count("E00")
-        expect(@events.key("E00").good).to eq 2
+        expect(@events.key("E01").good).to eq 0
+        @events.up_good_count("E01")
+        @events.up_good_count("E01")
+        expect(@events.key("E01").good).to eq 2
       end
     end
 
     describe "#down_good_count" do
       it "good が 1 から 0 に減ること" do
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-        @events.up_good_count("E00")
-        expect(@events.key("E00").good).to eq 1
-        @events.down_good_count("E00")
-        expect(@events.key("E00").good).to eq 0
+        @events.up_good_count("E01")
+        expect(@events.key("E01").good).to eq 1
+        @events.down_good_count("E01")
+        expect(@events.key("E01").good).to eq 0
       end
 
       it "2回実行すると good が 2 から 0 に減ること" do
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-        @events.up_good_count("E00")
-        @events.up_good_count("E00")
-        expect(@events.key("E00").good).to eq 2
-        @events.down_good_count("E00")
-        @events.down_good_count("E00")
-        expect(@events.key("E00").good).to eq 0
+        @events.up_good_count("E01")
+        @events.up_good_count("E01")
+        expect(@events.key("E01").good).to eq 2
+        @events.down_good_count("E01")
+        @events.down_good_count("E01")
+        expect(@events.key("E01").good).to eq 0
       end
     end
 
