@@ -5,7 +5,7 @@ require 'config/config'
 
 TEST_EVENT_CSV_PATH = "#{APP_ROOT}/spec/tmp/test_event.csv"
 CHANGED_ORDER_CSV_PATH = "#{APP_ROOT}/spec/tmp/changed_order.csv"
-TEST_CSV_2_PATH = "#{APP_ROOT}/spec/tmp/20121020.csv"
+TEST_MANY_EVENTS_CSV_PATH = "#{APP_ROOT}/spec/tmp/test_many_events.csv"
 
 module EventManage
   module SpecDatabaseHelper
