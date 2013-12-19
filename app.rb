@@ -20,12 +20,12 @@ module EventManage
     end
 
     get '/' do
-      @database.open(DB_FILE_NAME)
-
       if File.exist?(CSV_PATH)
-        @database.events.import_csv(CSV_PATH)
-        Dir::glob("#{CSV_PATH}*").each {|f| File.delete(f)}
-      end
+        @database.open(DB_FILE_NAME) do |db|
++         db.events.import_csv(CSV_PATH)
++         Dir::glob("#{CSV_PATH}*").each {|f| File.delete(f)}
+        end
++     end
 
       haml :index
     end
