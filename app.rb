@@ -36,7 +36,7 @@ module EventManage
       # 検索にかかった時間を測りたい場合はコメントを外す
       #start = Time.now
 
-      @keyword = params[:q].gsub(/　/, ' ').split
+      @keywords = params[:q].gsub(/　/, ' ').split
       begin
         start_time = Time.parse(params[:start_time]) unless params[:start_time].blank?
         # 終了期間+1日までの範囲を検索
@@ -47,9 +47,9 @@ module EventManage
         redirect '/'
       end
 
-      @events = Events.search(@keyword, {:operator => :and, :start_time => start_time, :end_time => end_time})
-      @communities = @events.get_top_community(5)
-      @organizers = @events.get_top_organizer(5)
+      @events = Events.search(@keywords, {:operator => :and, :start_time => start_time, :end_time => end_time})
+      @top_communities = @events.get_top_community(5)
+      @top_organizers = @events.get_top_organizer(5)
 
       @current_page = params[:page].to_i
       @current_page = 1 if @current_page <= 0
