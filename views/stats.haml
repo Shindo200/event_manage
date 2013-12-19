@@ -9,7 +9,7 @@
       %col
       %col{:width => "80"}
     %tbody
-      - @communities.each do |community|
+      - @top_communities.each do |community|
         %tr
           %td
             = h community[0]
@@ -21,7 +21,7 @@
       %col
       %col{:width => "80"}
     %tbody
-      - @organizers.each do |organizer|
+      - @top_organizers.each do |organizer|
         %tr
           %td
             = h organizer[0]
@@ -31,7 +31,7 @@
   %h4
     検索
     %small
-      = "#{@result_size} 件中 #{@current_page} ページ目"
+      = "#{@events.size} 件 #{@current_page} ページ目"
   %table.table.table-striped
     %colgroup
       %col
@@ -41,11 +41,11 @@
         %tr
           %td
             .event-title
-              = title_escape(event[:title], @keyword)
+              = title_escape(event[:title], @keywords)
             .event-time
               = event[:datetime].strftime("%Y-%m-%d %R")
             .event-summary
-              = summary_escape(event[:summary], @keyword)
+              = summary_escape(event[:summary], @keywords)
           %td
             %form{:action => "good?q=#{uri_escape params[:q]}", :method => "post"}
               %input{:type => "hidden", :name => "key", :value => event[:_key]}
