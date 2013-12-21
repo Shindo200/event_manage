@@ -153,17 +153,15 @@ module EventManage
       Events.new(result, @current_page)
     end
 
-    def paginate(opts = {})
-      opts[:page] ||= 1
-
+    def paginate(page = 1)
       events = @events.paginate([
         {:key => "good",     :order => :desc},
         {:key => "datetime", :order => :desc}],
-        :page => opts[:page],
+        :page => page,
         :size => SHOW_EVENTS
       )
 
-      Events.new(events)
+      Events.new(events, page)
     end
 
     def up_good_count(key)
@@ -206,8 +204,8 @@ module EventManage
     end
 
     def paginate(page = 1)
-      # ページ数が 1 未満の場合は、self を返す
-      return self if page < 1
+      # ページ数が 1 未満の場合は、ページ 1 でページングする
+      page = 1 if page < 1
 
       # 最終ページ数より大きいページ数の場合は、最終ページ数でページングする
       page = last_page if page > last_page

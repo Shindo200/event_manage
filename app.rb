@@ -52,10 +52,7 @@ module EventManage
       @top_communities = @events.get_top_community(5)
       @top_organizers = @events.get_top_organizer(5)
 
-      @current_page = params[:page].to_i
-      @current_page = 1 if @current_page <= 0
-      @last_page = ((@events.size - 1) / SHOW_EVENTS) + 1
-      @paged_events = @events.paginate(page: @current_page)
+      @paged_events = @events.paginate(params[:page].to_i)
 
       # 検索にかかった時間を測りたい場合はコメントを外す
       #puts (Time.now - start).to_f

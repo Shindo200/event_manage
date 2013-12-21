@@ -31,7 +31,7 @@
   %h4
     検索
     %small
-      = "#{@events.size} 件 #{@current_page} ページ目"
+      = "#{@events.size} 件 #{@paged_events.current_page} ページ目"
   %table.table.table-striped
     %colgroup
       %col
@@ -53,34 +53,34 @@
                 = event[:good]
   .pagination.pagination-small.pagination-centered
     %ul
-      - if @current_page > 1
+      - if @paged_events.first_page?
+        %li
+          %a
+            &laquo;最初
+        %li
+          %a
+            &laquo;前
+      - else
         %li
           %a{:href => "./search?#{uri_escape(query_params params)}&page=1"}
             &laquo;最初
         %li
-          %a{:href => "./search?#{uri_escape(query_params params)}&page=#{@current_page - 1}"}
-            &laquo;前
-      - else
-        %li
-          %a
-            &laquo;最初
-        %li
-          %a
+          %a{:href => "./search?#{uri_escape(query_params params)}&page=#{@paged_events.current_page - 1}"}
             &laquo;前
       %li
         %a
-          = "#{@current_page} / #{@last_page}"
-      - if @current_page < @last_page
+          = "#{@paged_events.current_page} / #{@paged_events.last_page}"
+      - if @paged_events.last_page?
         %li
-          %a{:href => "./search?#{uri_escape(query_params params)}&page=#{@current_page + 1}"}
+          %a
             次&raquo;
         %li
-          %a{:href => "./search?#{uri_escape(query_params params)}&page=#{@last_page}"}
+          %a
             最後&raquo;
       - else
         %li
-          %a
+          %a{:href => "./search?#{uri_escape(query_params params)}&page=#{@paged_events.current_page + 1}"}
             次&raquo;
         %li
-          %a
+          %a{:href => "./search?#{uri_escape(query_params params)}&page=#{@paged_events.last_page}"}
             最後&raquo;
