@@ -134,60 +134,76 @@ module EventManage
     end
 
     describe "#search" do
-      before do
+      before :all do
         @groonga_database = GroongaDatabase.new
         @groonga_database.open("test.db")
         @events = @groonga_database.events
+        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end
 
       context "オプションに何も渡さない場合" do
-        it "title カラムを全文検索し、マッチしたイベントを返すこと" do
-          @events.import_csv(TEST_EVENT_CSV_PATH)
-          records = @events.search(["イベント"]).all.map {|r| r[:_key]}
-          expect(records).to eq ["00000000"]
+        it "title カラムを全文検索できること" do
+          result_records = @events.search(["球技大会"]).all.map {|r| r[:title]}
+          expect(result_records.size).to eq 21
+          expect(result_records.uniq).to eq ["球技大会"]
         end
 
-        it "venue カラムを全文検索し、マッチしたイベントを返すこと" do
-          @events.import_csv(TEST_EVENT_CSV_PATH)
-          records = @events.search(["地区"]).all.map {|r| r[:_key]}
-          expect(records).to eq ["00000000"]
+        it "venue カラムを全文検索できること" do
+          result_records = @events.search(["A地区"]).all.map {|r| r[:venue]}
+          expect(result_records.size).to eq 21
+          expect(result_records.uniq).to eq ["A地区"]
         end
 
-        it "summary カラムを全文検索し、マッチしたイベントを返すこと" do
-          @events.import_csv(TEST_EVENT_CSV_PATH)
-          records = @events.search(["概要"]).all.map {|r| r[:_key]}
-          expect(records).to eq ["00000000"]
+        it "summary カラムを全文検索できること" do
+          result_records = @events.search(["サッカー"]).all.map {|r| r[:summary]}
+          expect(result_records.size).to eq 14
+          expect(result_records.uniq).to eq ["サッカー"]
         end
 
         it "note カラムを全文検索し、マッチしたイベントを返すこと" do
-          @events.import_csv(TEST_EVENT_CSV_PATH)
-          records = @events.search(["備考"]).all.map {|r| r[:_key]}
-          expect(records).to eq ["00000000"]
+          result_records = @events.search(["初心者のみ"]).all.map {|r| r[:note]}
+          expect(result_records.size).to eq 42 
+          expect(result_records.uniq).to eq ["初心者のみ"]
         end
 
         it "マッチしなかった場合は、空の配列を返すこと" do
-          @events.import_csv(TEST_EVENT_CSV_PATH)
-          records = @events.search(["Nothing"]).all.map {|r| r[:_key]}
-          expect(records).to eq []
+          result_records = @events.search(["Nothing"]).all.map {|r| r[:_key]}
+          expect(result_records.size).to eq 0
+        end
+
+        it "title, venue, summary, note のカラムで OR 検索を行うこと" do
+          result_records = @events.search(["球技大会","竜王戦"]).all.map {|r| [r[:title], r[:venue], r[:summary], r[:note]]}
+          expect(result_records.size).to eq 35
+          expect(result_records.flatten.uniq.include?("球技大会")).to be_true
+          expect(result_records.flatten.uniq.include?("竜王戦")).to be_true
         end
 
         it "キーワードに何も渡さなかった場合は、全てのイベントを返すこと" do
-          @events.import_csv(TEST_EVENT_CSV_PATH)
-          records = @events.search([]).all.map {|r| r[:_key]}
-          expect(records).to eq ["00000000"]
+          result_records = @events.search([]).all.map {|r| r[:_key]}
+          all_records = [
+            "E01", "E02", "E03", "E04", "E05", "E06", "E07", "E08", "E09", "E10",
+            "E11", "E12", "E13", "E14", "E15", "E16", "E17", "E18", "E19", "E20",
+            "E21", "E22", "E23", "E24", "E25", "E26", "E27", "E28", "E29", "E30",
+            "E31", "E32", "E33", "E34", "E35", "E36", "E37", "E38", "E39", "E40",
+            "E41", "E42", "E43", "E44", "E45", "E46", "E47", "E48", "E49", "E50",
+            "E51", "E52", "E53", "E54", "E55", "E56", "E57", "E58", "E59", "E60",
+            "E61", "E62", "E63", "E64", "E65", "E66", "E67", "E68", "E69", "E70"
+          ]
+          expect(result_records).to eq all_records
         end
       end
 
       context "オプションで AND 検索を指定した場合" do
-        it "キーワードを全て含むイベントだけを返すこと" do
-          @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-          records = @events.search(["球技","将棋", "料理"], operator: :and).all.map {|r| r[:_key]}
-          expect(records).to eq ["E10", "E20", "E30", "E40", "E50", "E60", "E70"]
+        it "title, venue, summary, note のカラムで AND 検索を行うこと" do
+          result_records = @events.search(["球技大会", "A地区", "サッカー", "初心者のみ"], operator: :and).all.map {|r| [r[:title], r[:venue], r[:summary], r[:note]]}
+          expect(result_records.size).to eq 7
+          expect(result_records.uniq).to eq [["球技大会", "A地区", "サッカー", "初心者のみ"]]
+          result_records = @events.search(["球技大会", "竜王戦"], operator: :and).all.map {|r| r[:_key]}
+          expect(result_records.size).to eq 0
         end
 
         it "キーワードに何も渡さなかった場合は、全てのイベントを返すこと" do
-          @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
-          result_records = @events.search([]).all.map {|r| r[:_key]}
+          result_records = @events.search([], operator: :and).all.map {|r| r[:_key]}
           all_records = [
             "E01", "E02", "E03", "E04", "E05", "E06", "E07", "E08", "E09", "E10",
             "E11", "E12", "E13", "E14", "E15", "E16", "E17", "E18", "E19", "E20",
@@ -203,7 +219,6 @@ module EventManage
 
       context "オプションで検索範囲（開始日〜）を指定した場合" do
         it "検索範囲内に開催したイベントだけを返すこと" do
-          @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
           start_time = "2012/01/01"
           result_records = @events.search(["大会"], start_time: start_time).all.map {|r| r[:_key]}
           filtered_records = [
@@ -220,7 +235,6 @@ module EventManage
 
       context "オプションで検索範囲（〜終了日）を指定した場合" do
         it "検索範囲内に開催したイベントだけを返すこと" do
-          @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
           end_time = "2012/01/31"
           result_records = @events.search(["大会"], end_time: end_time).all.map {|r| r[:_key]}
           filtered_records = [
@@ -237,7 +251,6 @@ module EventManage
 
       context "オプションで検索範囲（開始日〜終了日）を指定した場合" do
         it "検索範囲内に開催したイベントだけを返すこと" do
-          @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
           start_time = "2012/01/01"
           end_time = "2012/01/31"
           result_records = @events.search(["大会"], start_time: start_time, end_time: end_time).all.map {|r| r[:_key]}
@@ -252,7 +265,7 @@ module EventManage
         end
       end
 
-      after do
+      after :all do
         @groonga_database.close
         SpecDatabaseHelper.delete_test_database
       end
