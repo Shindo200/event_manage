@@ -6,18 +6,6 @@ module EventManage
     include Rack::Utils
     alias_method :h, :escape_html
 
-    def to_year(ym)
-      year = ym[0, 4]
-      return nil unless year.to_i >= 2000 && year.to_i <= 3000
-      year
-    end
-
-    def to_month(ym)
-      month = ym[5, 2]
-      return nil unless month.to_i >= 1 && month.to_i <= 12
-      month
-    end
-
     def title_escape(title, words)
       title = h(title)
       words = array_escape(words)
