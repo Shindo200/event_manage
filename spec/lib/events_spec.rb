@@ -259,46 +259,44 @@ module EventManage
     end
 
     describe "#get_top_community" do
-      before do
+      before :all do
         @groonga_database = GroongaDatabase.new
         @groonga_database.open("test.db")
         @events = @groonga_database.events
+        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end
 
       it "グループをイベント開催数が多い順に返すこと" do
-        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         expect(@events.get_top_community).to eq [["Aグループ", 28], ["Bグループ", 21]]
       end
 
       it "返されるグループの数を指定することができること" do
-        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         expect(@events.get_top_community(1)).to eq [["Aグループ", 28]]
       end
 
-       after do
+       after :all do
         @groonga_database.close
         SpecDatabaseHelper.delete_test_database
       end
     end
 
     describe "#get_top_supporter" do
-      before do
+      before :all do
         @groonga_database = GroongaDatabase.new
         @groonga_database.open("test.db")
         @events = @groonga_database.events
+        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end
 
       it "開催者をイベント開催数が多い順に返すこと" do
-        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         expect(@events.get_top_organizer).to eq [["User_1", 42], ["User_2", 21], ["User_3", 7]]
       end
 
       it "返される開催者の数を絞ることができること" do
-        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         expect(@events.get_top_organizer(1)).to eq [["User_1", 42]]
       end
 
-      after do
+      after :all do
         @groonga_database.close
         SpecDatabaseHelper.delete_test_database
       end
@@ -309,17 +307,16 @@ module EventManage
         @groonga_database = GroongaDatabase.new
         @groonga_database.open("test.db")
         @events = @groonga_database.events
+        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end
 
       it "good が 0 から 1 に増えること" do
-        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         expect(@events.key("E01").good).to eq 0
         @events.up_good_count("E01")
         expect(@events.key("E01").good).to eq 1
       end
 
       it "2回実行すると good が 0 から 2 に増えること" do
-        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         expect(@events.key("E01").good).to eq 0
         @events.up_good_count("E01")
         @events.up_good_count("E01")
@@ -337,10 +334,10 @@ module EventManage
         @groonga_database = GroongaDatabase.new
         @groonga_database.open("test.db")
         @events = @groonga_database.events
+        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end
 
       it "good が 1 から 0 に減ること" do
-        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         @events.up_good_count("E01")
         expect(@events.key("E01").good).to eq 1
         @events.down_good_count("E01")
@@ -348,7 +345,6 @@ module EventManage
       end
 
       it "2回実行すると good が 2 から 0 に減ること" do
-        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         @events.up_good_count("E01")
         @events.up_good_count("E01")
         expect(@events.key("E01").good).to eq 2
