@@ -39,10 +39,8 @@ module EventManage
       ary.flatten.map {|str| h(str)}
     end
 
-    def uri_escape(str)
-      str = h(str)
-      str = URI.escape(str)
-      str
+    def escape_uri(str)
+      URI.escape(str)
     end
 
     def query_params(params)

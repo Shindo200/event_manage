@@ -47,7 +47,7 @@
             .event-summary
               = summary_escape(event[:summary], @keywords)
           %td
-            %form{:action => "good?q=#{uri_escape params[:q]}", :method => "post"}
+            %form{:action => "good?q=#{escape_uri(params[:q])}", :method => "post"}
               %input{:type => "hidden", :name => "key", :value => event[:_key]}
               %button{:type => "submit", :class => "btn btn-primary"}
                 = event[:good]
@@ -62,10 +62,10 @@
             &laquo;前
       - else
         %li
-          %a{:href => "./search?#{uri_escape(query_params params)}&page=1"}
+          %a{:href => "./search?#{escape_uri(query_params(params))}&page=1"}
             &laquo;最初
         %li
-          %a{:href => "./search?#{uri_escape(query_params params)}&page=#{@paged_events.current_page - 1}"}
+          %a{:href => "./search?#{escape_uri(query_params(params))}&page=#{@paged_events.current_page - 1}"}
             &laquo;前
       %li
         %a
@@ -79,8 +79,8 @@
             最後&raquo;
       - else
         %li
-          %a{:href => "./search?#{uri_escape(query_params params)}&page=#{@paged_events.current_page + 1}"}
+          %a{:href => "./search?#{escape_uri(query_params(params))}&page=#{@paged_events.current_page + 1}"}
             次&raquo;
         %li
-          %a{:href => "./search?#{uri_escape(query_params params)}&page=#{@paged_events.last_page}"}
+          %a{:href => "./search?#{escape_uri(query_params(params))}&page=#{@paged_events.last_page}"}
             最後&raquo;
