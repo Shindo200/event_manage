@@ -62,10 +62,10 @@
             &laquo;前
       - else
         %li
-          %a{:href => "./search?#{escape_uri(query_params(params))}&page=1"}
+          %a{:href => "./search?#{escape_query_params(params)}&page=1"}
             &laquo;最初
         %li
-          %a{:href => "./search?#{escape_uri(query_params(params))}&page=#{@paged_events.current_page - 1}"}
+          %a{:href => "./search?#{escape_query_params(params)}&page=#{@paged_events.current_page - 1}"}
             &laquo;前
       %li
         %a
@@ -79,8 +79,8 @@
             最後&raquo;
       - else
         %li
-          %a{:href => "./search?#{escape_uri(query_params(params))}&page=#{@paged_events.current_page + 1}"}
+          %a{:href => "./search?#{escape_query_params(params)}&page=#{@paged_events.current_page + 1}"}
             次&raquo;
         %li
-          %a{:href => "./search?#{escape_uri(query_params(params))}&page=#{@paged_events.last_page}"}
+          %a{:href => "./search?#{escape_query_params(params)}&page=#{@paged_events.last_page}"}
             最後&raquo;

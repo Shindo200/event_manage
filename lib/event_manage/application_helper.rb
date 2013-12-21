@@ -43,8 +43,8 @@ module EventManage
       URI.escape(str)
     end
 
-    def query_params(params)
-      "q=#{params[:q]}&start_time=#{params[:start_time]}&end_time=#{params[:end_time]}"
+    def escape_query_params(params)
+      escape_uri("q=#{params[:q]}&start_time=#{params[:start_time]}&end_time=#{params[:end_time]}")
     end
 
     def truncate(text, opts = {})
