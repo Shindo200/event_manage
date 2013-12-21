@@ -6,13 +6,6 @@ module EventManage
     include Rack::Utils
     alias_method :h, :escape_html
 
-    def load_csv(issues)
-      if File.exist?(CSV_PATH)
-        issues.import_csv(CSV_PATH)
-        Dir::glob("#{CSV_PATH}*").each {|f| File.delete(f)}
-      end
-    end
-
     def to_year(ym)
       year = ym[0, 4]
       return nil unless year.to_i >= 2000 && year.to_i <= 3000
