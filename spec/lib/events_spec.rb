@@ -6,13 +6,11 @@ require 'time'
 
 module EventManage
   describe "Events" do
-    before do
-      @groonga_database = GroongaDatabase.new
-      @groonga_database.open("test.db")
-      @events = @groonga_database.events
-    end
-
     describe "#scan_community" do
+      before do
+        @events = Events.new(nil)
+      end
+
       context "イベント名の先頭にグループ名が入っているとき" do
         it "そのグループ名を返すこと" do
           expect(@events.send(:scan_community, "Aグループ総選挙")).to eq "Aグループ"
@@ -33,6 +31,10 @@ module EventManage
     end
 
     describe "#valid_community?" do
+      before do
+        @events = Events.new(nil)
+      end
+
       context "nil を渡したとき" do
         it "false を返すこと" do
           expect(@events.send(:valid_community?, nil)).to be_false
@@ -55,6 +57,12 @@ module EventManage
     end
 
     describe "#import_csv" do
+      before do
+        @groonga_database = GroongaDatabase.new
+        @groonga_database.open("test.db")
+        @events = @groonga_database.events
+      end
+
       context "イベントを1回インポートしたとき" do
         it "全イベント件数が 1 になること" do
           expect(@events.size).to eq 0
@@ -118,9 +126,20 @@ module EventManage
           expect(@events.size).to eq 2
         end
       end
+
+      after do
+        @groonga_database.close
+        SpecDatabaseHelper.delete_test_database
+      end
     end
 
     describe "#search" do
+      before do
+        @groonga_database = GroongaDatabase.new
+        @groonga_database.open("test.db")
+        @events = @groonga_database.events
+      end
+
       context "オプションに何も渡さない場合" do
         it "title カラムを全文検索し、マッチしたイベントを返すこと" do
           @events.import_csv(TEST_EVENT_CSV_PATH)
@@ -193,8 +212,8 @@ module EventManage
             "E31", "E32", "E33", "E34", "E35", "E36", "E37", "E38", "E39", "E40",
             "E41", "E42", "E43", "E44", "E45", "E46", "E47", "E48", "E49", "E50",
             "E51", "E52", "E53", "E54", "E55", "E56", "E57", "E58", "E59", "E60",
-            "E61", "E62", "E63", "E64", "E65", "E66", "E67", "E68", "E69", "E70"]
-          
+            "E61", "E62", "E63", "E64", "E65", "E66", "E67", "E68", "E69", "E70"
+          ]
           expect(result_records).to eq filtered_records
         end
       end
@@ -232,9 +251,20 @@ module EventManage
           expect(result_records).to eq filtered_records
         end
       end
+
+      after do
+        @groonga_database.close
+        SpecDatabaseHelper.delete_test_database
+      end
     end
 
     describe "#get_top_community" do
+      before do
+        @groonga_database = GroongaDatabase.new
+        @groonga_database.open("test.db")
+        @events = @groonga_database.events
+      end
+
       it "グループをイベント開催数が多い順に返すこと" do
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         expect(@events.get_top_community).to eq [["Aグループ", 28], ["Bグループ", 21]]
@@ -244,9 +274,20 @@ module EventManage
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         expect(@events.get_top_community(1)).to eq [["Aグループ", 28]]
       end
+
+       after do
+        @groonga_database.close
+        SpecDatabaseHelper.delete_test_database
+      end
     end
 
     describe "#get_top_supporter" do
+      before do
+        @groonga_database = GroongaDatabase.new
+        @groonga_database.open("test.db")
+        @events = @groonga_database.events
+      end
+
       it "開催者をイベント開催数が多い順に返すこと" do
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         expect(@events.get_top_organizer).to eq [["User_1", 42], ["User_2", 21], ["User_3", 7]]
@@ -256,9 +297,20 @@ module EventManage
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         expect(@events.get_top_organizer(1)).to eq [["User_1", 42]]
       end
+
+      after do
+        @groonga_database.close
+        SpecDatabaseHelper.delete_test_database
+      end
     end
 
     describe "#up_good_count" do
+      before do
+        @groonga_database = GroongaDatabase.new
+        @groonga_database.open("test.db")
+        @events = @groonga_database.events
+      end
+
       it "good が 0 から 1 に増えること" do
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         expect(@events.key("E01").good).to eq 0
@@ -273,9 +325,20 @@ module EventManage
         @events.up_good_count("E01")
         expect(@events.key("E01").good).to eq 2
       end
+
+      after do
+        @groonga_database.close
+        SpecDatabaseHelper.delete_test_database
+      end
     end
 
     describe "#down_good_count" do
+      before do
+        @groonga_database = GroongaDatabase.new
+        @groonga_database.open("test.db")
+        @events = @groonga_database.events
+      end
+
       it "good が 1 から 0 に減ること" do
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
         @events.up_good_count("E01")
@@ -293,12 +356,11 @@ module EventManage
         @events.down_good_count("E01")
         expect(@events.key("E01").good).to eq 0
       end
-    end
 
-    after do
-      # データベースを閉じてから、テストデータベースファイルを削除する
-      @groonga_database.close
-      SpecDatabaseHelper.delete_test_database
+      after do
+        @groonga_database.close
+        SpecDatabaseHelper.delete_test_database
+      end
     end
   end
 end
