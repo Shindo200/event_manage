@@ -323,17 +323,19 @@ module EventManage
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end
 
-      it "1回呼び出すと vote が 0 から 1 に増えること" do
-        expect(@events.key("E01").vote).to eq 0
-        @events.up_vote("E01")
-        expect(@events.key("E01").vote).to eq 1
-      end
+      context "vote が 0 のとき" do
+        it "1回呼び出すと vote が 0 から 1 に増えること" do
+          expect(@events.key("E01").vote).to eq 0
+          @events.up_vote("E01")
+          expect(@events.key("E01").vote).to eq 1
+        end
 
-      it "2回呼び出すと vote が 0 から 2 に増えること" do
-        expect(@events.key("E01").vote).to eq 0
-        @events.up_vote("E01")
-        @events.up_vote("E01")
-        expect(@events.key("E01").vote).to eq 2
+        it "2回呼び出すと vote が 0 から 2 に増えること" do
+          expect(@events.key("E01").vote).to eq 0
+          @events.up_vote("E01")
+          @events.up_vote("E01")
+          expect(@events.key("E01").vote).to eq 2
+        end
       end
 
       after do
@@ -350,20 +352,24 @@ module EventManage
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end
 
-      it "1回呼び出すと vote が 1 から 0 に減ること" do
-        @events.up_vote("E01")
-        expect(@events.key("E01").vote).to eq 1
-        @events.down_vote("E01")
-        expect(@events.key("E01").vote).to eq 0
-      end
+      context "vote が 2 のとき" do
+        before do
+          @events.up_vote("E01")
+          @events.up_vote("E01")
+        end
 
-      it "2回呼び出すと vote が 2 から 0 に減ること" do
-        @events.up_vote("E01")
-        @events.up_vote("E01")
-        expect(@events.key("E01").vote).to eq 2
-        @events.down_vote("E01")
-        @events.down_vote("E01")
-        expect(@events.key("E01").vote).to eq 0
+        it "1回呼び出すと vote が 2 から 1 に減ること" do
+          expect(@events.key("E01").vote).to eq 2
+          @events.down_vote("E01")
+          expect(@events.key("E01").vote).to eq 1
+        end
+
+        it "2回呼び出すと vote が 2 から 0 に減ること" do
+          expect(@events.key("E01").vote).to eq 2
+          @events.down_vote("E01")
+          @events.down_vote("E01")
+          expect(@events.key("E01").vote).to eq 0
+        end
       end
 
       after do
