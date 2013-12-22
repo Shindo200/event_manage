@@ -59,7 +59,7 @@ module EventManage
     describe "#import_csv" do
       before do
         @groonga_database = GroongaDatabase.new
-        @groonga_database.open("test.db")
+        @groonga_database.open(TEST_DATABASE_FILE_NAME)
         @events = @groonga_database.events
       end
 
@@ -136,7 +136,7 @@ module EventManage
     describe "#search" do
       before :all do
         @groonga_database = GroongaDatabase.new
-        @groonga_database.open("test.db")
+        @groonga_database.open(TEST_DATABASE_FILE_NAME)
         @events = @groonga_database.events
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end
@@ -162,7 +162,7 @@ module EventManage
 
         it "note カラムを全文検索し、マッチしたイベントを返すこと" do
           result_records = @events.search(["初心者のみ"]).all.map {|r| r[:note]}
-          expect(result_records.size).to eq 42 
+          expect(result_records.size).to eq 42
           expect(result_records.uniq).to eq ["初心者のみ"]
         end
 
@@ -274,7 +274,7 @@ module EventManage
     describe "#get_top_community" do
       before :all do
         @groonga_database = GroongaDatabase.new
-        @groonga_database.open("test.db")
+        @groonga_database.open(TEST_DATABASE_FILE_NAME)
         @events = @groonga_database.events
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end
@@ -296,7 +296,7 @@ module EventManage
     describe "#get_top_supporter" do
       before :all do
         @groonga_database = GroongaDatabase.new
-        @groonga_database.open("test.db")
+        @groonga_database.open(TEST_DATABASE_FILE_NAME)
         @events = @groonga_database.events
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end
@@ -318,7 +318,7 @@ module EventManage
     describe "#up_vote" do
       before do
         @groonga_database = GroongaDatabase.new
-        @groonga_database.open("test.db")
+        @groonga_database.open(TEST_DATABASE_FILE_NAME)
         @events = @groonga_database.events
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end
@@ -347,7 +347,7 @@ module EventManage
     describe "#down_vote" do
       before do
         @groonga_database = GroongaDatabase.new
-        @groonga_database.open("test.db")
+        @groonga_database.open(TEST_DATABASE_FILE_NAME)
         @events = @groonga_database.events
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end

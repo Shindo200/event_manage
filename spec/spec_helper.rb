@@ -3,6 +3,9 @@ $LOAD_PATH.unshift File.expand_path('../../',__FILE__)
 require 'rspec'
 require 'config/config'
 
+# テスト用データベースファイル名
+TEST_DATABASE_FILE_NAME = "test.db"
+
 TEST_EVENT_CSV_PATH = "#{APP_ROOT}/spec/tmp/test_event.csv"
 CHANGED_ORDER_CSV_PATH = "#{APP_ROOT}/spec/tmp/changed_order.csv"
 TEST_OTHER_EVENT_CSV_PATH = "#{APP_ROOT}/spec/tmp/test_other_event.csv"
