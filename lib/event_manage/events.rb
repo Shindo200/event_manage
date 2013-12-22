@@ -164,11 +164,11 @@ module EventManage
       Events.new(events, page)
     end
 
-    def up_good_count(key)
+    def up_vote(key)
       @events[key][:vote] += 1
     end
 
-    def down_good_count(key)
+    def down_vote(key)
       @events[key][:vote] -= 1
     end
 
