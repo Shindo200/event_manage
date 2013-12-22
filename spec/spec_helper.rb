@@ -20,7 +20,7 @@ module EventManage
       begin
         # 想定していないファイルが消えることを防ぐため、DB_ROOT がnilの場合はエラー扱いにする
         raise unless DB_ROOT
-        Dir::glob("#{DB_ROOT}/test.db*").each { |f| File.delete(f) }
+        Dir::glob("#{DB_ROOT}/#{TEST_DATABASE_FILE_NAME}*").each { |f| File.delete(f) }
       rescue
         warn "\nWARNING: データベースファイルの保存先が指定されていません。"
         warn "テストデータベースファイルの削除処理を中止しました。"
