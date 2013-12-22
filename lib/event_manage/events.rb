@@ -19,7 +19,7 @@ module EventManage
         table.text    "venue"
         table.text    "summary"
         table.text    "note"
-        table.integer "good"
+        table.integer "vote"
       end
 
       Groonga::Schema.create_table("Terms",
@@ -99,7 +99,7 @@ module EventManage
           venue:      row["開催地区"],
           summary:    row["概要"],
           note:       row["備考"],
-          good:       0
+          vote:       0
         }
 
         # Events データベースに、key がイベントIDとなるデータを追加する。
@@ -155,7 +155,7 @@ module EventManage
 
     def paginate(page = 1)
       events = @events.paginate([
-        {:key => "good",     :order => :desc},
+        {:key => "vote",     :order => :desc},
         {:key => "datetime", :order => :desc}],
         :page => page,
         :size => SHOW_EVENTS
@@ -165,11 +165,11 @@ module EventManage
     end
 
     def up_good_count(key)
-      @events[key][:good] += 1
+      @events[key][:vote] += 1
     end
 
     def down_good_count(key)
-      @events[key][:good] -= 1
+      @events[key][:vote] -= 1
     end
 
     def get_top_community(limit = nil)
@@ -211,7 +211,7 @@ module EventManage
       page = last_page if page > last_page
 
       events = @events.paginate([
-        {:key => "good",     :order => :desc},
+        {:key => "vote",     :order => :desc},
         {:key => "datetime", :order => :desc}],
         :page => page,
         :size => SHOW_EVENTS

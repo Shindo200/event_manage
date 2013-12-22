@@ -50,7 +50,7 @@
             %form{:action => "good?q=#{escape_uri(params[:q])}", :method => "post"}
               %input{:type => "hidden", :name => "key", :value => event[:_key]}
               %button{:type => "submit", :class => "btn btn-primary"}
-                = event[:good]
+                = event[:vote]
   .pagination.pagination-small.pagination-centered
     %ul
       - if @paged_events.first_page?

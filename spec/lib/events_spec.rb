@@ -323,17 +323,17 @@ module EventManage
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end
 
-      it "good が 0 から 1 に増えること" do
-        expect(@events.key("E01").good).to eq 0
+      it "1回呼び出すと vote が 0 から 1 に増えること" do
+        expect(@events.key("E01").vote).to eq 0
         @events.up_good_count("E01")
-        expect(@events.key("E01").good).to eq 1
+        expect(@events.key("E01").vote).to eq 1
       end
 
-      it "2回実行すると good が 0 から 2 に増えること" do
-        expect(@events.key("E01").good).to eq 0
+      it "2回呼び出すと vote が 0 から 2 に増えること" do
+        expect(@events.key("E01").vote).to eq 0
         @events.up_good_count("E01")
         @events.up_good_count("E01")
-        expect(@events.key("E01").good).to eq 2
+        expect(@events.key("E01").vote).to eq 2
       end
 
       after do
@@ -350,20 +350,20 @@ module EventManage
         @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
       end
 
-      it "good が 1 から 0 に減ること" do
+      it "1回呼び出すと vote が 1 から 0 に減ること" do
         @events.up_good_count("E01")
-        expect(@events.key("E01").good).to eq 1
+        expect(@events.key("E01").vote).to eq 1
         @events.down_good_count("E01")
-        expect(@events.key("E01").good).to eq 0
+        expect(@events.key("E01").vote).to eq 0
       end
 
-      it "2回実行すると good が 2 から 0 に減ること" do
+      it "2回呼び出すと vote が 2 から 0 に減ること" do
         @events.up_good_count("E01")
         @events.up_good_count("E01")
-        expect(@events.key("E01").good).to eq 2
+        expect(@events.key("E01").vote).to eq 2
         @events.down_good_count("E01")
         @events.down_good_count("E01")
-        expect(@events.key("E01").good).to eq 0
+        expect(@events.key("E01").vote).to eq 0
       end
 
       after do
