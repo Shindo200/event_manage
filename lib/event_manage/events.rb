@@ -58,7 +58,9 @@ module EventManage
 
     def last_page
       # 最終ページ数
-      ((@events.size - 1) / SHOW_EVENTS) + 1
+      last_page = ((@events.size - 1) / SHOW_EVENTS) + 1
+      # 最小ページ数は 1
+      (last_page >= 1) ? last_page : 1
     end
 
     def first_page?
@@ -153,17 +155,6 @@ module EventManage
       Events.new(result, @current_page)
     end
 
-    def paginate(page = 1)
-      events = @events.paginate([
-        {:key => "vote",     :order => :desc},
-        {:key => "datetime", :order => :desc}],
-        :page => page,
-        :size => SHOW_EVENTS
-      )
-
-      Events.new(events, page)
-    end
-
     def up_vote(key)
       @events[key][:vote] += 1
     end
@@ -205,7 +196,7 @@ module EventManage
 
     def paginate(page = 1)
       # ページ数が 1 未満の場合は、ページ 1 でページングする
-      page = 1 if page < 1
+      page = 1if page < 1
 
       # 最終ページ数より大きいページ数の場合は、最終ページ数でページングする
       page = last_page if page > last_page
