@@ -6,6 +6,32 @@ require 'time'
 
 module EventManage
   describe "Events" do
+    describe "#last_page" do
+      context "1 ページの表示件数が 20 件、登録されたイベントが 0 件のとき" do
+        it "1 を返すこと" do
+          event_records = instance_double("Events", :size => 0)
+          events = Events.new(event_records)
+          expect(events.last_page).to eq 1
+        end
+      end
+
+      context "1 ページの表示件数が 20 件、登録されたイベントが 20 件のとき" do
+        it "1 を返すこと" do
+          event_records = instance_double("Events", :size => 20)
+          events = Events.new(event_records)
+          expect(events.last_page).to eq 1
+        end
+      end
+
+      context "1 ページの表示件数が 20 件、登録されたイベントが 21 件のとき" do
+        it "2 を返すこと" do
+          event_records = instance_double("Events", :size => 21)
+          events = Events.new(event_records)
+          expect(events.last_page).to eq 2
+        end
+      end
+    end
+
     describe "#scan_community" do
       before do
         @events = Events.new(nil)
