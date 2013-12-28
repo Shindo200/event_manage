@@ -398,17 +398,17 @@ module EventManage
 
       context "引数に 2 を渡したとき" do
         it "2ページ目を表示すること" do
-          expect(@events.paginate.current_page).to eq 2
+          expect(@events.paginate(2).current_page).to eq 2
         end
       end
 
       context "1ページの表示件数が 20 件、登録されたイベントが 70 件、引数に 5 を渡したとき" do
         it "最終ページである 4 ページを返すこと" do
-          expect(@events.paginate.current_page).to eq 4
+          expect(@events.paginate(5).current_page).to eq 4
         end
 
         it "1 ページに表示される件数が 10 件になること" do
-          expect(@events.paginate.size).to eq 10
+          expect(@events.paginate(5).size).to eq 10
         end
       end
 
