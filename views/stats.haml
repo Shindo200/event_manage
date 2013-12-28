@@ -69,8 +69,8 @@
             &laquo;前
       %li
         %a
-          = "#{@paged_events.current_page} / #{@paged_events.last_page}"
-      - if @paged_events.last_page?
+          = "#{@paged_events.current_page} / #{@events.last_page}"
+      - if @paged_events.current_page == @events.last_page
         %li
           %a
             次&raquo;
@@ -82,5 +82,5 @@
           %a{:href => "./search?#{escape_query_params(params)}&page=#{@paged_events.current_page + 1}"}
             次&raquo;
         %li
-          %a{:href => "./search?#{escape_query_params(params)}&page=#{@paged_events.last_page}"}
+          %a{:href => "./search?#{escape_query_params(params)}&page=#{@events.last_page}"}
             最後&raquo;
