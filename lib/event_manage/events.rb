@@ -202,10 +202,10 @@ module EventManage
       page = last_page if page > last_page
 
       events = @events.paginate([
-        {:key => "vote",     :order => :desc},
-        {:key => "datetime", :order => :desc}],
-        :page => page,
-        :size => SHOW_EVENTS
+        {key: "vote",     order: :desc},
+        {key: "datetime", order: :desc}],
+        page: page,
+        size: SHOW_EVENTS
       )
 
       Events.new(events, page)
