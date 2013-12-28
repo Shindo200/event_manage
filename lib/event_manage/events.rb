@@ -196,7 +196,7 @@ module EventManage
 
     def paginate(page = 1)
       # ページ数が 1 未満の場合は、ページ 1 でページングする
-      page = 1if page < 1
+      page = 1 if page < 1
 
       # 最終ページ数より大きいページ数の場合は、最終ページ数でページングする
       page = last_page if page > last_page
