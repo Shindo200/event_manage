@@ -377,5 +377,45 @@ module EventManage
         SpecDatabaseHelper.delete_test_database
       end
     end
+
+    describe "#paginate" do
+      before :all do
+        @groonga_database = GroongaDatabase.new
+        @groonga_database.open(TEST_DATABASE_FILE_NAME)
+        @events = @groonga_database.events
+        @events.import_csv(TEST_MANY_EVENTS_CSV_PATH)
+      end
+
+      context "引数に何も渡さないとき" do
+        it "1ページの表示件数が SHOW_EVENTS に設定した数になること" do
+          expect(@events.paginate.size).to eq SHOW_EVENTS
+        end
+
+        it "1ページ目を表示すること" do
+          expect(@events.paginate.current_page).to eq 1
+        end
+      end
+
+      context "引数に 2 を渡したとき" do
+        it "2ページ目を表示すること" do
+          expect(@events.paginate.current_page).to eq 2
+        end
+      end
+
+      context "1ページの表示件数が 20 件、登録されたイベントが 70 件、引数に 5 を渡したとき" do
+        it "最終ページである 4 ページを返すこと" do
+          expect(@events.paginate.current_page).to eq 4
+        end
+
+        it "1 ページに表示される件数が 10 件になること" do
+          expect(@events.paginate.size).to eq 10
+        end
+      end
+
+      after :all do
+        @groonga_database.close
+        SpecDatabaseHelper.delete_test_database
+      end
+    end
   end
 end
