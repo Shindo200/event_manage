@@ -41,11 +41,11 @@
         %tr
           %td
             .event-title
-              = title_escape(event[:title], @keywords)
+              = snippet_title(event, @keywords)
             .event-time
               = event[:datetime].strftime("%Y-%m-%d %R")
             .event-summary
-              = summary_escape(event[:summary], @keywords)
+              = snippet_summary(event, @keywords)
           %td
             %form{:action => "good?q=#{escape_uri(params[:q])}", :method => "post"}
               %input{:type => "hidden", :name => "key", :value => event[:_key]}
