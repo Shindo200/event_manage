@@ -12,20 +12,20 @@ module EventManage
       describe "#open" do
         it "データベースファイルが作られること" do
           @groonga_database.open("test.db")
-          expect(File.exist?("#{DB_ROOT}/test.db")).to be_true
+          expect(File.exist?("#{DB_ROOT}/test.db")).to be_truthy
         end
 
         it "データベースが開かれること" do
-          expect(File.exist?("#{DB_ROOT}/test.db")).to be_false
-          expect(@groonga_database.opened?).to be_false
+          expect(File.exist?("#{DB_ROOT}/test.db")).to be_falsey
+          expect(@groonga_database.opened?).to be_falsey
           @groonga_database.open("test.db")
-          expect(@groonga_database.opened?).to be_true
+          expect(@groonga_database.opened?).to be_truthy
         end
       end
 
       describe "#opened?" do
         it "False を返すこと" do
-          expect(@groonga_database.opened?).to be_false
+          expect(@groonga_database.opened?).to be_falsey
         end
       end
 
@@ -47,31 +47,31 @@ module EventManage
         context "ブロックを渡していない場合" do
           it "データベースが開かれること" do
             # #close のテストもこのテストケースに含まれている
-            expect(@groonga_database.opened?).to be_false
+            expect(@groonga_database.opened?).to be_falsey
             @groonga_database.open("test.db")
-            expect(@groonga_database.opened?).to be_true
+            expect(@groonga_database.opened?).to be_truthy
           end
         end
 
         context "ブロックを渡した場合" do
           it "ブロックの処理を実行すること" do
-            expect(@groonga_database.opened?).to be_false
+            expect(@groonga_database.opened?).to be_falsey
             temporary = false
             @groonga_database.open("test.db") { |database| temporary = true }
-            expect(temporary).to be_true
+            expect(temporary).to be_truthy
           end
 
           it "ブロックの処理を終えたときに、データベースを閉じること" do
-            expect(@groonga_database.opened?).to be_false
+            expect(@groonga_database.opened?).to be_falsey
             @groonga_database.open("test.db") { |database| temporary = true }
-            expect(@groonga_database.opened?).to be_false
+            expect(@groonga_database.opened?).to be_falsey
           end
         end
       end
 
       describe "#opened?" do
         it "False を返すこと" do
-          expect(@groonga_database.opened?).to be_false
+          expect(@groonga_database.opened?).to be_falsey
         end
       end
 
@@ -90,7 +90,7 @@ module EventManage
 
       describe "#opened?" do
         it "True を返すこと" do
-          expect(@groonga_database.opened?).to be_true
+          expect(@groonga_database.opened?).to be_truthy
         end
       end
 

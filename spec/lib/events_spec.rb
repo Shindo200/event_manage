@@ -37,21 +37,21 @@ module EventManage
 
       context "nil を渡したとき" do
         it "false を返すこと" do
-          expect(@events.send(:valid_community?, nil)).to be_false
+          expect(@events.send(:valid_community?, nil)).to be_falsey
         end
       end
 
       context "文字列 \"Null\" を渡したとき"do
         it "false を返すこと" do
-          expect(@events.send(:valid_community?, "Null")).to be_false
+          expect(@events.send(:valid_community?, "Null")).to be_falsey
         end
       end
 
       context "文字列 \"***グループ\" を渡したとき" do
         it "true を返すこと" do
-          expect(@events.send(:valid_community?, "Aグループ")).to be_true
-          expect(@events.send(:valid_community?, "テストグループ")).to be_true
-          expect(@events.send(:valid_community?, "グループ")).to be_true
+          expect(@events.send(:valid_community?, "Aグループ")).to be_truthy
+          expect(@events.send(:valid_community?, "テストグループ")).to be_truthy
+          expect(@events.send(:valid_community?, "グループ")).to be_truthy
         end
       end
     end
@@ -174,8 +174,8 @@ module EventManage
         it "title, venue, summary, note のカラムで OR 検索を行うこと" do
           result_records = @events.search(["球技大会","竜王戦"]).all.map {|r| [r[:title], r[:venue], r[:summary], r[:note]]}
           expect(result_records.size).to eq 35
-          expect(result_records.flatten.uniq.include?("球技大会")).to be_true
-          expect(result_records.flatten.uniq.include?("竜王戦")).to be_true
+          expect(result_records.flatten.uniq.include?("球技大会")).to be_truthy
+          expect(result_records.flatten.uniq.include?("竜王戦")).to be_truthy
         end
 
         it "キーワードに何も渡さなかった場合は、全てのイベントを返すこと" do
