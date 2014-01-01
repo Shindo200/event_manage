@@ -3,7 +3,6 @@ require 'csv'
 require 'time'
 require 'groonga'
 require 'lib/event_manage/groonga_database'
-require 'pry'
 
 module EventManage
   class Events
