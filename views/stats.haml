@@ -47,10 +47,16 @@
             .event-summary
               = snippet_summary(event, @keywords)
           %td
-            %form{:action => "good?q=#{escape_uri(params[:q])}", :method => "post"}
-              %input{:type => "hidden", :name => "key", :value => event[:_key]}
-              %button{:type => "submit", :class => "btn btn-primary"}
+            %div.vote
+              %input{:type => "hidden", :name => "event_id", :value => event[:_key]}
+              %a.up_vote
+                %span.glyphicon.glyphicon-arrow-up
+                  &nbsp;
+              %span.count_vote
                 = event[:vote]
+              %a.down_vote
+                %span.glyphicon.glyphicon-arrow-down
+                  &nbsp;
   .pagination.pagination-small.pagination-centered
     %ul
       - if @paged_events.first_page?
