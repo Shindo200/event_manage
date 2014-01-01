@@ -60,9 +60,8 @@ module EventManage
       haml :stats
     end
 
-    post '/good' do
-      #@events.up_good_count(params[:key]) if params[:key]
-      #redirect "/search?q=#{uri_escape params[:q]}"
+    post '/:event_id/up_vote' do
+      @events.up_vote(params[:event_id])
     end
 
     after do
