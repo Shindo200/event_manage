@@ -155,12 +155,14 @@ module EventManage
       Events.new(result, @current_page)
     end
 
-    def up_vote(key)
-      @events[key][:vote] += 1
+    def up_vote(event_id)
+      event = @events[event_id]
+      event[:vote] += 1
     end
 
-    def down_vote(key)
-      @events[key][:vote] -= 1
+    def down_vote(event_id)
+      event = @events[event_id]
+      event[:vote] -= 1
     end
 
     def get_top_community(limit = nil)
