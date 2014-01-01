@@ -1,13 +1,15 @@
-%form{:action => "search", :method => "get"}
-  .input-append
-    %input{:type => "text", :class => "span4", :name => "q", :value => "#{h params[:q]}"}
-    %button{:type => "submit", :class => "btn"} Search
-.span3
+.col-md-4
+  .search-field
+    %form{:action => "search", :method => "get"}
+      .input-append
+        .col-md-9
+          %input{:type => "text" , :class => "form-control", :name => "q", :value => "#{h params[:q]}"}
+        %button{:type => "submit", :class => "btn btn-default btn-sm"} Search
   %h4 イベントを頻繁に開催しているグループ
   %table.table.table-bordered.table-striped
     %colgroup
+      %col.col-sm-9
       %col
-      %col{:width => "80"}
     %tbody
       - @top_communities.each do |community|
         %tr
@@ -18,8 +20,8 @@
   %h4 イベントを頻繁に開催している人
   %table.table.table-bordered.table-striped
     %colgroup
+      %col.col-sm-9
       %col
-      %col{:width => "80"}
     %tbody
       - @top_organizers.each do |organizer|
         %tr
@@ -27,15 +29,15 @@
             = h organizer[0]
           %td
             = "#{organizer[1]}件"
-.span8
+.col-md-8
   %h4
     検索
     %small
       = "#{@events.size} 件 #{@paged_events.current_page} ページ目"
   %table.table.table-striped
     %colgroup
+      %col.col-sm-9
       %col
-      %col{:width => "80"}
     %tbody
       - @paged_events.each do |event|
         %tr
@@ -47,18 +49,18 @@
             .event-summary
               = snippet_summary(event, @keywords)
           %td
-            %div.vote
+            .vote
               %input{:type => "hidden", :name => "event_id", :value => event[:_key]}
-              %a.up_vote
-                %span.glyphicon.glyphicon-arrow-up
-                  &nbsp;
-              %span.count_vote
-                = event[:vote]
-              %a.down_vote
-                %span.glyphicon.glyphicon-arrow-down
-                  &nbsp;
-  .pagination.pagination-small.pagination-centered
-    %ul
+                .btn-group
+                  %button.up_vote.btn.btn-default.btn-sm
+                    %span.glyphicon.glyphicon-thumbs-up
+                  %button.btn.btn-default.btn-sm
+                    %span
+                      = "#{event[:vote]} pt"
+                  %button.down_vote.btn.btn-default.btn-sm
+                    %span.glyphicon.glyphicon-thumbs-down
+  .text-center
+    %ul.pagination.pagination-centered
       - if @paged_events.first_page?
         %li
           %a
