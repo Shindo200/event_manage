@@ -60,7 +60,7 @@ module EventManage
       haml :stats
     end
 
-    post '/:event_id/up_vote' do
+    post '/:event_id/vote/up' do
       # 対象のイベントの vote を1つ増やす
       @database.open(DB_FILE_NAME) { |events| events.up_vote(params[:event_id]) }
     end
