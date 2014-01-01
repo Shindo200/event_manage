@@ -1,11 +1,20 @@
 %form{:action => "search", :method => "get", :class => "search-box"}
   .input-append.application-title
     .date-range
+      .start-date
+        %label
+          開始年月
+          .row
+            .col-md-12
+              %input{:type => "date", :class => "form-control", :name => "start_time"}
+      .end-date
+        %label
+          終了年月
+          .row
+            .col-md-12
+              %input{:type => "date", :class => "form-control", :name => "end_time"}
+    .keword
       %label
-        開始年月
-        %input{:type => "date", :class => "span2", :name => "start_time"}
-      %label
-        終了年月
-        %input{:type => "date", :class => "span2", :name => "end_time"}
-    %input{:type => "text", :class => "span4", :name => "q"}
-    %button{:type => "submit", :class => "btn"} Search
+        検索キーワード
+      %input{:type => "text", :class => "form-control", :name => "q"}
+    %button{:type => "submit", :class => "btn btn-default"} Search
