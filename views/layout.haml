@@ -16,9 +16,6 @@
           = APP_NAME
         %small
           = APP_DESCRIPTION
-    - if flash[:notice]
-      .text-error
-        = flash[:notice]
     .row
       = yield
   .page-footer

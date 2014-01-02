@@ -2,16 +2,12 @@
 $LOAD_PATH.unshift File.expand_path('../', __FILE__)
 require 'sinatra'
 require 'sinatra/json'
-require 'rack-flash'
 require 'time'
 require 'config/config'
 require 'lib/event_manage'
 
 module EventManage
   class Application < Sinatra::Base
-    enable :sessions
-    use Rack::Flash
-
     helpers do
       include ApplicationHelper
     end
