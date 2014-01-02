@@ -23,6 +23,7 @@ module EventManage
     get '/' do
       if File.exist?(CSV_PATH)
         @database.open(DB_FILE_NAME) do |db|
+          # CSV をインポートしてから、CSV を削除する
           db.events.import_csv(CSV_PATH)
           Dir::glob("#{CSV_PATH}*").each {|f| File.delete(f)}
         end
