@@ -68,6 +68,13 @@ module EventManage
       json result_data
     end
 
+    post '/:event_id/vote/down' do
+      result_data = {}
+      # 対象のイベントの vote を1つ減らす
+      @database.open(DB_FILE_NAME) { |db| result_data[:vote] = db.events.down_vote(params[:event_id]) }
+      json result_data
+    end
+
     after do
       @database.close
     end
