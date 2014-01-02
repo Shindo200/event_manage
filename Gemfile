@@ -1,5 +1,6 @@
 source 'http://rubygems.org'
 gem 'sinatra'
+gem 'sinatra-contrib'
 gem 'rroonga'
 gem 'rack-flash3'
 gem 'mechanize'
