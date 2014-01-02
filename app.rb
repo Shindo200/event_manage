@@ -63,7 +63,7 @@ module EventManage
     post '/:event_id/vote/up' do
       # 対象のイベントの vote を1つ増やす
       vote = 0
-      @database.open(DB_FILE_NAME) { |events| vote = events.up_vote(params[:event_id]) }
+      @database.open(DB_FILE_NAME) { |db| vote = db.events.up_vote(params[:event_id]) }
       vote
     end
 
