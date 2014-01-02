@@ -1,6 +1,7 @@
 # encoding: utf-8
 $LOAD_PATH.unshift File.expand_path('../', __FILE__)
 require 'sinatra'
+require 'sinatra/json'
 require 'rack-flash'
 require 'time'
 require 'config/config'
@@ -61,10 +62,10 @@ module EventManage
     end
 
     post '/:event_id/vote/up' do
+      result_data = {}
       # 対象のイベントの vote を1つ増やす
-      vote = 0
-      @database.open(DB_FILE_NAME) { |db| vote = db.events.up_vote(params[:event_id]) }
-      vote
+      @database.open(DB_FILE_NAME) { |db| result_data[:vote] = db.events.up_vote(params[:event_id]) }
+      json result_data
     end
 
     after do
