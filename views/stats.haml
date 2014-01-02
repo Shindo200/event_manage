@@ -51,14 +51,14 @@
           %td
             .vote
               %input{:type => "hidden", :name => "event_id", :value => event[:_key]}
-                .btn-group
-                  %button.up_vote.btn.btn-default.btn-sm
-                    %span.glyphicon.glyphicon-thumbs-up
-                  %button.btn.btn-default.btn-sm
-                    %span
-                      = "#{event[:vote]} pt"
-                  %button.down_vote.btn.btn-default.btn-sm
-                    %span.glyphicon.glyphicon-thumbs-down
+              .btn-group
+                %button.up_vote.btn.btn-default.btn-sm
+                  %span.glyphicon.glyphicon-thumbs-up
+                %button.btn.btn-default.btn-sm
+                  %span
+                    = "#{event[:vote]} pt"
+                %button.down_vote.btn.btn-default.btn-sm
+                  %span.glyphicon.glyphicon-thumbs-down
   .text-center
     %ul.pagination.pagination-centered
       - if @paged_events.first_page?
