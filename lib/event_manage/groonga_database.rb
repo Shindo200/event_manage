@@ -25,8 +25,6 @@ module EventManage
         define_schema
       end
 
-      @events = nil
-
       if block_given?
         # ブロック内の処理を実行し、終わったらデータベースを閉じる
         begin
@@ -40,6 +38,7 @@ module EventManage
     def close
       @database.close if opened?
       @database = nil
+      @events = nil
       Groonga::Context.default.close
       Groonga::Context.default = nil
     end
