@@ -4,6 +4,7 @@ require 'sinatra'
 require 'sinatra/json'
 require 'rack-flash'
 require 'time'
+require 'padrino-helpers'
 require 'config/config'
 require 'lib/event_manage'
 
@@ -11,6 +12,7 @@ module EventManage
   class Application < Sinatra::Base
     enable :sessions
     use Rack::Flash
+    register Padrino::Helpers
 
     helpers do
       include ApplicationHelper
