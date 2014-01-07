@@ -257,6 +257,12 @@ module EventManage
           ]
           expect(result_records).to eq filtered_records
         end
+
+        it "検索範囲内に開催されたイベントがなかったときは空の配列を返すこと" do
+          start_time = "2014/01/01"
+          result_records = @events.search([], start_time: start_time).all.map {|r| r[:_key]}
+          expect(result_records).to eq []
+        end
       end
 
       context "オプションで検索範囲（〜終了日）を指定した場合" do
