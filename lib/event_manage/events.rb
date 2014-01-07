@@ -114,6 +114,14 @@ module EventManage
       result = @events.select do |event|
         expression = nil
 
+        # 指定した単語で Event を絞り込む
+        sub = word_expression(event, words, opts[:operator])
+        if expression.nil?
+          expression = sub
+        else
+          expression &= sub
+        end
+
         # 開始年月日を指定した場合、その年月日で Event を絞り込む
         if opts[:start_time]
           sub_expression = event.datetime >= Time.parse(opts[:start_time])
@@ -135,14 +143,6 @@ module EventManage
           else
             expression &= sub_expression
           end
-        end
-
-        # 指定した単語で Event を絞り込む
-        sub = word_expression(event, words, opts[:operator])
-        if expression.nil?
-          expression = sub
-        else
-          expression &= sub
         end
 
         # 何も条件を指定しなかったとき、全ての Event を取り出す
