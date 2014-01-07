@@ -115,11 +115,11 @@ module EventManage
         expression = nil
 
         # 指定した単語で Event を絞り込む
-        sub = word_expression(event, words, opts[:operator])
+        sub_exp = word_expression(event, words, opts[:operator])
         if expression.nil?
-          expression = sub
+          expression = sub_exp
         else
-          expression &= sub
+          expression &= sub_exp
         end
 
         # 開始年月日を指定した場合、その年月日で Event を絞り込む
