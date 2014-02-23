@@ -8,6 +8,6 @@ gem 'haml'
 gem 'padrino'
 
 group :development, :test do
-  gem 'rspec'
+  gem 'rspec', '>= 3.0.0.beta1'
   gem 'guard-rspec'
 end
