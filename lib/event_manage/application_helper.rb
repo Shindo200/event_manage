@@ -20,7 +20,6 @@ module EventManage
       return event[column] if keywords.size == 0
 
       snippet = Groonga::Snippet.new(
-        width:              width,
         default_open_tag:   '<span class="match">',
         default_close_tag:  '</span>',
         html_escape:        true,
@@ -29,7 +28,7 @@ module EventManage
 
       keywords.each { |keyword| snippet.add_keyword(keyword) }
 
-      snippet.execute(event[column]).join
+      snippet.execute(event[column]).join.truncate(limit: width)
     end
 
     def escape_uri(str)
