@@ -36,8 +36,8 @@ module EventManage
 
     get '/search' do
       redirect '/' unless params[:q]
-
       @keywords = params[:q].gsub(/　/, ' ').split
+
       begin
         # TODO: ***_time が有効な文字列がチェックする処理を入れる
         start_time = params[:start_time] unless params[:start_time].blank?
@@ -48,11 +48,9 @@ module EventManage
       end
 
       @database.open(DB_FILE_NAME)
-
       @events = @database.events.search(@keywords, operator: :and, start_time: start_time, end_time: end_time)
       @top_communities = @events.get_top_community(5)
       @top_organizers = @events.get_top_organizer(5)
-
       @paged_events = @events.paginate(params[:page].to_i)
 
       haml :stats
@@ -60,15 +58,19 @@ module EventManage
 
     post '/:event_id/vote/up' do
       result_data = {}
+
       # 対象のイベントの vote を1つ増やす
       @database.open(DB_FILE_NAME) { |db| result_data[:vote] = db.events.up_vote(params[:event_id]) }
+
       json result_data
     end
 
     post '/:event_id/vote/down' do
       result_data = {}
+
       # 対象のイベントの vote を1つ減らす
       @database.open(DB_FILE_NAME) { |db| result_data[:vote] = db.events.down_vote(params[:event_id]) }
+
       json result_data
     end
 

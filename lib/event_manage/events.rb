@@ -147,7 +147,6 @@ module EventManage
 
         # 何も条件を指定しなかったとき、全ての Event を取り出す
         expression = event if expression.nil?
-
         expression
       end
 
@@ -166,10 +165,12 @@ module EventManage
 
     def get_top_community(limit = nil)
       hash_dep = {}
+
       @events.group("community").each do |event|
         community = event.key
         hash_dep[community] = event.n_sub_records
       end
+
       # 開催グループ名が空のイベントを結果を取り除く
       hash_dep.delete(nil)
 
@@ -177,21 +178,21 @@ module EventManage
       communities = hash_dep.sort_by {|_k,v| v}.reverse
 
       communities.slice!(limit..-1) unless limit.nil?
-
       communities
     end
 
     def get_top_organizer(limit = nil)
       hash_sup = {}
+
       @events.group("organizer").each do |event|
         organizer = event.key
         hash_sup[organizer] = event.n_sub_records
       end
+
       # 開催数が多い順でソートする
       organizers = hash_sup.sort_by {|_k,v| v}.reverse
 
       organizers.slice!(limit..-1) unless limit.nil?
-
       organizers
     end
 

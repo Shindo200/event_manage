@@ -14,7 +14,6 @@ module EventManage
       # このメソッドは引数が1つのブロックを受け取ることができる
       # ブロック引数には self が渡される
       # ブロックの処理を終えたときに、データベースを閉じる
-
       file_path = "#{DB_ROOT}/#{file_name}"
 
       Groonga::Context.default_options = { encoding: :utf8 }

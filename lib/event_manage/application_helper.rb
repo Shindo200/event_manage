@@ -27,7 +27,6 @@ module EventManage
         )
 
       keywords.each { |keyword| snippet.add_keyword(keyword) }
-
       snippet.execute(event[column]).join.truncate(limit: width)
     end
 
